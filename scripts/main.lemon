@@ -2,10 +2,14 @@ include debug
 include aiz
 include hcz
 include mgz
+include cnz
+include fight1
 
 global u8 earlyend.state
 
 global bool earlyend.streamermode = true
+
+global bool earlyend.swapcontrols
 
 constant u8 EARLYEND_NOCLEAR = 0
 constant u8 EARLYEND_AIZCLEAR = 1
@@ -70,4 +74,65 @@ function void Standalone.onResumeAfterPause()
 {
 	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
 	base.Standalone.onResumeAfterPause()
+}
+
+
+
+
+
+
+function u64 Standalone.getModdedSoundKey(u64 soundKey, u8 sfxId, u8 soundRegType)
+{
+	if (sfxId == MUSIC_KNUCKLES)
+	{
+		if (earlyend.state == EARLYEND_MGZCLEAR)
+			return "mus_k"
+	}
+
+	return base.Standalone.getModdedSoundKey(soundKey, sfxId, soundRegType)
+}
+
+//# address-hook(0x084b18) end(0x084b5a)
+function void CheckDistanceToPlayers()
+{
+	if (earlyend.swapcontrols)
+	{
+		A1 = 0xffffb04a
+		A2 = 0xffffb04a
+		D2.s16 = objA0.position.x.u16 - objA1.position.x.u16
+		D3.s16 = objA0.position.x.u16 - u16[A2 + 0x10]
+
+		D0 = (D2.s16 < 0) ? 2 : 0
+		D1 = (D3.s16 < 0) ? 2 : 0
+		D2.u16 = abs(D2.s16)
+		D3.u16 = abs(D3.s16)
+
+		// Which one is closer?
+		if (D3.u16 < D2.u16)
+		{
+			A1 = A2
+			D0 = D1
+			D2.u16 = D3.u16
+		}
+
+		// Check distance-y to the closest player
+		D3.s16 = objA0.position.y.u16 - objA1.position.y.u16
+		D1 = (D3.s16 < 0) ? 2 : 0
+		D3.u16 = abs(D3.s16)
+		return
+	}
+	
+	base.CheckDistanceToPlayers()
+}
+
+
+function void waitForNextFrame()
+{
+	base.waitForNextFrame()
+
+	if (earlyend.swapcontrols)
+	{
+		control.pad2 = control.pad1
+		control.pad1 = 0
+	}
 }

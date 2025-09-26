@@ -1,0 +1,167 @@
+//# address-hook(0x06229e) end(0x0622ac)
+function void fn06229e()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		// gone for good. you can't fix what you broke now.
+		UnloadObject()
+		return
+	}
+	
+	base.fn06229e()
+}
+
+//# address-hook(0x063de0) end(0x063dfa)
+function void fn063de0()
+{	
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		A1 = 0xffffb000
+		if (u8[A1 + 0x37] != 0) // protection flag check
+		{
+			
+			if (u8[A1 + 0x34] <= 8 && u8[A1 + 0x34] != 0) // invuln flag check
+			{
+				u8[A1 + 0x34] = 16
+			}
+			
+			objA0.sprite_priority = 0
+			objA0.sprite_attributes |= sprite_attribute.PRIORITY
+			
+			if (objA0.base_state < 0x1c)
+			{
+				player2.control_override = 0
+			}
+		}
+	}
+	
+	base.fn063de0()
+}
+
+//# address-hook(0x064310) end(0x06434e)
+function void fn064310()
+{
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		objA0.base_state = 0x18
+		hud.dirty.timer = 0
+		u16[A0 + 0x44] = 2
+		objA0.mapping_offset = 0x066f36
+		objA0.animation.sprite = 2
+		objA0.flags38 |= 0x10
+		playMusic(MUSIC_CTRL_FADEOUT)
+		objA0.value3b = 0
+		return
+	}
+	
+	base.fn064310()
+}
+
+//# address-hook(0x0643a4) end(0x0643b8)
+function void fn0643a4()
+{
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		objA0.base_state = 0x1c
+		objA0.value3b = 0
+		objA0.collision_attributes = collision.size.8x8
+		boss.remaining_hits = 1
+		return
+	}
+
+	base.fn0643a4()
+}
+
+//# address-hook(0x06438a) end(0x0643a2)
+function void fn06438a()
+{
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		if (objA0.value3b == 0)
+		{
+			// waiting for player to hit him
+			
+			if (objA0.collision_attributes == 0)
+			{
+				playSound(0x5d)
+				objA0.value3b = 1
+				objA0.velocity.x = 0x20
+				objA0.velocity.y = -0x300
+				
+				objA0.animation.sprite = 2		
+				player2.control_override = 0xff
+				control.player2 = 0
+				control.tails = 0
+			}
+			
+			AddAsDynamicObject()
+		}
+		else if (objA0.value3b == 1)
+		{
+			// falling into the water
+			MoveWithGravity20()
+			
+			if (objA0.position.y.u16 > water.height.current)
+			{
+				objA0.value3b = 2
+				objA0.animation.sprite = 3
+				
+				playSound(SFX_WATERSPLASH)
+
+				A6 = 0xffffcc54
+				u16[A6 + 0x20] = 0x0100
+				u16[A6 + 0x0a] |= sprite_attribute.PRIORITY
+				u8[A6 + 0x21] = 1
+				u8[A6 + 0x2a] = 0
+				u32[A6 + 0x10] = objA0.position.x
+				
+				objA0.velocity.y = 0x10
+				
+				s16[A0 + 0x40] = 0x02
+				objA0.value3e = 0x40
+			}
+		}
+		else if (objA0.value3b == 2)
+		{
+			UpdateMovementStraightSimple()
+			if (objA0.velocity.x > -0x60)
+			{
+				objA0.velocity.x -= 0x01
+			}
+			
+			fn0847e6()
+			
+			
+			if (objA0.position.x.u16 < camera.position.x.u16 - 0x60)
+			{
+				objA0.value3b = 3
+				objA0.countdown_value = 0x100
+				playSound(SFX_DROWN)
+			}
+		}
+		else if (objA0.value3b == 3)
+		{
+			--objA0.countdown_value
+			if (objA0.countdown_value == 0x40)
+			{
+				Audio.playAudio("snd_k", 1)
+				earlyend.state = EARLYEND_CNZCLEAR
+			}
+			
+			if (objA0.countdown_value < 0)
+			{
+				objA0.update_address = 0x0622b2
+				objA0.base_state = 0x0a
+				global.level_flag02 = 0
+				earlyend.swapcontrols = false
+				
+				player1.control_override = 0
+				player2.control_override = 0
+				hud.dirty.timer = 1
+			}
+		}
+		return
+	}
+	
+	base.fn06438a()
+}
