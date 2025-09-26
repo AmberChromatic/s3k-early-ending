@@ -1,0 +1,39 @@
+global bool key5_state
+
+function void Debugging.debugDraw()
+{
+	constant array<string> ROUTE_STATE =
+	{
+		"NO CLEAR",
+		"AIZ CLEAR",
+		"HCZ CLEAR",
+		"MGZ CLEAR",
+		"CNZ CLEAR",
+		"GAME CLEAR",
+	}
+	if (Key5)
+	{
+		if (!key5_state)
+		{
+			if (earlyend.state < EARLYEND_GAMECLEAR)
+			{
+				++earlyend.state
+			}
+			else
+			{
+				earlyend.state = EARLYEND_NOCLEAR
+			}
+			
+			string message = "Early End Progress: " + ROUTE_STATE[earlyend.state]
+			debugLog(message)
+			debugLog(earlyend.state)
+			key5_state = true
+		}
+	}
+	else
+	{
+		key5_state = false
+	}
+
+	base.Debugging.debugDraw()
+}

@@ -1,5 +1,5 @@
 {
 	// MUSIC
 	"mus_k": { "File": "k.ogg", "Type": "Music", "LoopStart": "962259"},
-	"snd_k": { "File": "k2.ogg", "Type": "Sound", "Channel": "40"},
+	"snd_k": { "File": "k2.ogg", "Type": "Sound", "Channel": "68"},
 }

@@ -1,0 +1,81 @@
+// TO-DO: account for a level restart after mgz check is passed
+
+//# address-hook(0x06c354) end(0x06c3e0)
+function void fn06c354()
+{
+	base.fn06c354()
+	
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		// route progression chance
+		u8[A0 + 0x46] = 0
+		
+		// give player a little bit more time to align correctly
+		objA0.countdown_value += 0x40
+	}
+}
+
+//# address-hook(0x06c3ec) end(0x06c414)
+function void fn06c3ec()
+{
+	base.fn06c3ec()
+	
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		// move down a little more to get 8 hits in...
+		objA0.countdown_value += 0x30
+	}
+}
+
+//# address-hook(0x06c422) end(0x06c436)
+function void fn06c422()
+{
+	base.fn06c422()
+	
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		// give a little more time to get 8 hits in...
+		objA0.countdown_value += 0x40
+	}
+}
+
+//# address-hook(0x06c4be) end(0x06c4f0)
+function void fn06c4be()
+{
+	base.fn06c4be()
+	
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		// missed chance, end route
+		u8[A0 + 0x46] = 0xff
+		earlyend.state = EARLYEND_NOCLEAR
+		playSound(0x68)
+	}
+}
+
+//# address-hook(0x06d5a4) end(0x06d618)
+function void fn06d5a4()
+{
+	if (boss.remaining_hits == 0 && earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		playMusic(MUSIC_CTRL_STOP)
+		Audio.playAudio("snd_k", 1)
+		earlyend.state = EARLYEND_MGZCLEAR
+	}
+
+	base.fn06d5a4()
+}
+
+
+
+//# address-hook(0x086984) end(0x0869c4)
+function void fn086984()
+{
+	if (earlyend.state == EARLYEND_MGZCLEAR)
+	{
+		fn0868f8()
+		return
+	}
+	
+	base.fn086984()
+}

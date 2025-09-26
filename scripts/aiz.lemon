@@ -1,0 +1,144 @@
+//# address-hook(0x065c56) end(0x065c6c)
+function void fn065c56()
+{
+	player1.control_override = 0
+
+	D0.u16 = 0x1000
+	screenmover_target.bottom = D0.u16
+	move_area.bottom.target = D0.u16
+
+	// "spawnSimpleChildObjects(0x084b12)" replaced by:
+	spawnSimpleChildObjects(0x084ad2, 1)		// Screen mover for the lower border
+	
+	
+}
+
+//# address-hook(0x02b452) end(0x02b492)
+function void fn02b452()
+{
+	// make this part scripted for streamers, release version won't do this
+	if (earlyend.streamermode)
+	{
+		if (u8[A0 + 0x34] == 0x04)
+		{
+			player1.control_override = 0xff
+			control.player1 = (0x0404 | 0x2020)
+		}
+	}
+
+	if (u8[A0 + 0x34] != 0)
+	{
+		--u8[A0 + 0x34]
+		return
+	}
+
+	if (objA0.flags2a & object.flag.P1_ON_OBJECT)
+	{
+		objA0.flags2a &= ~object.flag.P1_ON_OBJECT
+		u8[0xffffb000 + 0x2a] &= ~char.flag.ON_OBJECT
+		u8[0xffffb000 + 0x2a] |= char.flag.IN_AIR
+		u8[0xffffb000 + 0x20] = char.state.FALLING_PANIC
+	}
+
+	if (objA0.flags2a & object.flag.P2_ON_OBJECT)
+	{
+		objA0.flags2a &= ~object.flag.P2_ON_OBJECT
+		u8[0xffffb04a + 0x2a] &= ~char.flag.ON_OBJECT
+		u8[0xffffb04a + 0x2a] |= char.flag.IN_AIR
+		u8[0xffffb04a + 0x20] = char.state.FALLING_PANIC
+	}
+
+	UnloadObject()
+}
+
+
+
+// knuckles
+//# address-hook(0x0620e4) end(0x0620e4)
+function void fn0620e4()
+{
+	u32 backupA1 = A1
+	if (objA0.value3b == 0)
+	{
+		// checking for if player avoided trap
+		A1 = 0xffffb000
+		if (objA1.flags2a & char.flag.IN_AIR)
+		{
+			A1 = backupA1
+			// falling like normal
+			Object.AnimationProgressByLocalA1()
+		}
+		else
+		{
+			objA0.value3b = 1
+			playMusic(MUSIC_CTRL_FADEOUT)
+			
+			objA1.flags2a &= ~char.flag.FACING_LEFT
+			objA1.groundspeed = 0
+			player1.control_override = 0xff
+			control.player1 = 0x0101		// CONTROL_UP, CONTROL_UP
+			
+			player1.camera_lock = 0xff
+			
+			objA0.render_flags ^= render_flag.FLIP_X
+			objA0.animation.sprite = 32
+		}
+	}
+	else if (objA0.value3b == 1)
+	{
+		// route trigger
+		
+		if (camera.position.x.u16 < 0x4a38)
+		{
+			camera.position.x.u16 += 4
+		}
+		
+		if (camera.position.x.u16 > 0x4a38)
+		{
+			camera.position.x.u16 = 0x4a38
+		}
+		
+		if (camera.position.y.u16 > 0x015a)
+		{
+			camera.position.y.u16 -= 4
+		}
+		
+		if (camera.position.y.u16 < 0x015a)
+		{
+			camera.position.y.u16 = 0x015a
+		}
+		
+		++objA0.countdown_value
+		
+		if (objA0.countdown_value == 30)
+		{
+			objA0.animation.sprite = 33
+			
+			earlyend.state = EARLYEND_AIZCLEAR
+			Audio.playAudio("snd_k", 1)
+		}
+		if (objA0.countdown_value > 240)
+		{
+			objA0.value3b = 2
+			objA0.render_flags ^= render_flag.FLIP_X
+			objA0.animation.frame = 0
+			objA0.animation.timer = 0
+		}
+	}
+	else if (objA0.value3b == 2)
+	{
+		// walks away
+		
+		objA0.position.x.u16 += 2
+		Object.animationProgress(0x06669f)		// Cutscene Knuckles walking animation
+		
+		D0.u16 = camera.position.x.u16 + getScreenWidth() + 0x80
+		if (objA0.position.x.u16 > D0.u16)
+		{
+			player1.control_override = 0
+			player1.camera_lock = 0
+			Object.TriggerUnloading()
+			return
+		}
+	}
+}
