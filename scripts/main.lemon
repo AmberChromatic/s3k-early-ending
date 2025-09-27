@@ -97,7 +97,7 @@ function void CheckDistanceToPlayers()
 {
 	if (earlyend.swapcontrols)
 	{
-		A1 = 0xffffb04a
+		A1 = 0xffffb000
 		A2 = 0xffffb04a
 		D2.s16 = objA0.position.x.u16 - objA1.position.x.u16
 		D3.s16 = objA0.position.x.u16 - u16[A2 + 0x10]
@@ -107,13 +107,10 @@ function void CheckDistanceToPlayers()
 		D2.u16 = abs(D2.s16)
 		D3.u16 = abs(D3.s16)
 
-		// Which one is closer?
-		if (D3.u16 < D2.u16)
-		{
-			A1 = A2
-			D0 = D1
-			D2.u16 = D3.u16
-		}
+		// Make partner always closer
+		A1 = A2
+		D0 = D1
+		D2.u16 = D3.u16
 
 		// Check distance-y to the closest player
 		D3.s16 = objA0.position.y.u16 - objA1.position.y.u16

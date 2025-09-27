@@ -1,25 +1,14 @@
-//# address-hook(0x06229e) end(0x0622ac)
-function void fn06229e()
-{
-	if (earlyend.state == EARLYEND_CNZCLEAR)
-	{
-		// gone for good. you can't fix what you broke now.
-		UnloadObject()
-		return
-	}
-	
-	base.fn06229e()
-}
+// guh
 
 //# address-hook(0x063de0) end(0x063dfa)
 function void fn063de0()
 {	
 	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 	{
+		//debugLog(objA0.base_state)
 		A1 = 0xffffb000
 		if (u8[A1 + 0x37] != 0) // protection flag check
 		{
-			
 			if (u8[A1 + 0x34] <= 8 && u8[A1 + 0x34] != 0) // invuln flag check
 			{
 				u8[A1 + 0x34] = 16
@@ -36,6 +25,53 @@ function void fn063de0()
 	}
 	
 	base.fn063de0()
+}
+
+//# address-hook(0x063e7c) end(0x063eba)
+function void fn063e7c()
+{
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		fn063f20()
+		return
+	}
+
+	base.fn063e7c()
+}
+
+//# address-hook(0x063f20) end(0x063f36)
+function void fn063f20()
+{
+	base.fn063f20()
+	
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		objA0.countdown_value = 0x20
+	}
+}
+
+//# address-hook(0x064090) end(0x0640c8)
+function void fn064090()
+{
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	{
+		// Check against borders
+		fn06615a()
+
+		UpdateMovementStraightSimple()
+		if (objA0.velocity.x == 0)
+		{
+			// Stop gliding
+			fn064132()
+			return
+		}
+
+		A3 = 0x0640cc
+		fn0660be()
+		return
+	}
+	
+	base.fn064090()
 }
 
 //# address-hook(0x064310) end(0x06434e)
@@ -80,12 +116,14 @@ function void fn06438a()
 		if (objA0.value3b == 0)
 		{
 			// waiting for player to hit him
-			
+			fn06615a()
 			if (objA0.collision_attributes == 0)
 			{
 				playSound(0x5d)
+				
+				A1 = 0xffffb04a
 				objA0.value3b = 1
-				objA0.velocity.x = 0x20
+				objA0.velocity.x = ((objA1.position.x.u16 < objA0.position.x.u16) ? 0x200 : -0x200)
 				objA0.velocity.y = -0x300
 				
 				objA0.animation.sprite = 2		
@@ -100,7 +138,7 @@ function void fn06438a()
 		{
 			// falling into the water
 			MoveWithGravity20()
-			
+			fn06615a()
 			if (objA0.position.y.u16 > water.height.current)
 			{
 				objA0.value3b = 2
@@ -127,6 +165,15 @@ function void fn06438a()
 			if (objA0.velocity.x > -0x60)
 			{
 				objA0.velocity.x -= 0x01
+			}
+			else
+			{
+				objA0.velocity.x = -0x60
+			}
+			
+			if (objA0.velocity.x > 0x60)
+			{
+				objA0.velocity.x = 0x60
 			}
 			
 			fn0847e6()
