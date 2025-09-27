@@ -57,6 +57,7 @@ function void fn062354()
 						A1 = 0xffffb000
 						objA1.velocity.x = -0x200
 						objA1.groundspeed = -0x200
+						objA1.flags2a &= ~char.flag.FACING_LEFT
 						player1.control_override = 0xff
 						control.player1 = 0
 						
@@ -82,6 +83,8 @@ function void fn062354()
 						char.control_flags = u8[A1 + 0x2e]
 						char.layer_flags1 = u8[A1 + 0x46]
 						char.layer_flags2 = u8[A1 + 0x47]
+						
+						char.invuln.countdown = 120 // invuln timer
 
 						tails.ai_routine = 0x06
 						A0 = backupA0

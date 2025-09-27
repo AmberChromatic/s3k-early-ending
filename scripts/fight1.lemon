@@ -1,5 +1,40 @@
 // guh
 
+//# address-hook(0x065662) end(0x065690)
+function void fn065662()
+{
+	if (global.zone_act.apparent == 0x0301)
+	{
+		objA0.countdown_value = 0xff
+		
+		A1 = 0xffffb000
+		objA0.position.x.u16 = objA1.position.x.u16 + 0x04
+		objA0.position.y.u16 = objA1.position.y.u16 - 0x10
+		
+		if (objA1.flags2e == 0)
+		{
+			UnloadObject()
+			return
+		}
+	}
+	
+	
+	
+	base.fn065662()
+}
+
+//# address-hook(0x064c24) end(0x064c6a)
+function void fn064c24()
+{
+	if (global.zone_act.apparent == 0x0301)
+	{
+		UnloadObject()
+		return
+	}
+	
+	base.fn064c24()
+}
+
 //# address-hook(0x063de0) end(0x063dfa)
 function void fn063de0()
 {	
@@ -9,9 +44,26 @@ function void fn063de0()
 		A1 = 0xffffb000
 		if (u8[A1 + 0x37] != 0) // protection flag check
 		{
-			if (u8[A1 + 0x34] <= 8 && u8[A1 + 0x34] != 0) // invuln flag check
+			if (u8[A1 + 0x34] != 0)
 			{
-				u8[A1 + 0x34] = 16
+				if (objA1.state == char.state.STANDING)
+				{
+					if (u8[A1 + 0x2e] == 0)
+					{
+						u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION)
+						
+						// spawn dizzy stars
+						Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
+						spawnSimpleChildObjects(0x06563a, 1)
+					}
+					
+					objA1.animation.sprite = 0xc1
+				}
+			
+				if (u8[A1 + 0x34] <= 123) // invuln flag check
+				{
+					u8[A1 + 0x34] = 124
+				}
 			}
 			
 			objA0.sprite_priority = 0
@@ -22,6 +74,11 @@ function void fn063de0()
 				player2.control_override = 0
 			}
 		}
+		
+		if (global.level_started > -0x6f)
+			global.level_started -= 0x10
+		else
+			global.level_started = -0x7f
 	}
 	
 	base.fn063de0()
@@ -205,6 +262,10 @@ function void fn06438a()
 				player1.control_override = 0
 				player2.control_override = 0
 				hud.dirty.timer = 1
+				
+				A1 = 0xffffb000
+				u8[A1 + 0x2e] = 0
+				u8[A1 + 0x37] = 0
 			}
 		}
 		return
