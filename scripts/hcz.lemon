@@ -86,9 +86,8 @@ function void fn062232()
 	if (earlyend.state == EARLYEND_AIZCLEAR)
 	{
 		// missed chance to progress route, make wall unbreakable again
-		earlyend.state = EARLYEND_NOCLEAR
+		EarlyEnd.UpdateRouteProgression(EARLYEND_NOCLEAR)
 		global.level_flag02 = 0
-		playSound(0x68)
 	}
 
 	base.fn062232()
@@ -101,12 +100,11 @@ function void fn062014()
 	{
 		if (earlyend.state == EARLYEND_AIZCLEAR)
 		{
-			// make him fall back if wall broken
+			// make him fall back if wall broken, condition has been met
 			if (global.level_flag02 == 2)
 			{
 				playMusic(MUSIC_CTRL_STOP)
-				Audio.playAudio("snd_k", 1)
-				earlyend.state = EARLYEND_HCZCLEAR
+				EarlyEnd.UpdateRouteProgression(EARLYEND_HCZCLEAR)
 				global.level_flag02 = 0
 				objA0.velocity.x = 0x400
 				objA0.velocity.y = -0x200

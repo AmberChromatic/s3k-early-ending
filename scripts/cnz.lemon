@@ -11,6 +11,20 @@ function void fn06229e()
 	base.fn06229e()
 }
 
+//# address-hook(0x062332) end(0x062338)
+function void fn062332()
+{
+	base.fn062332()
+	
+	if (earlyend.state == EARLYEND_MGZCLEAR)
+	{
+		// not so funny anymore
+		objA0.animation.sprite = 22
+		objA0.animation.frame = 0
+		objA0.animation.timer = 0
+	}
+}
+
 //# address-hook(0x062354) end(0x06235a)
 function void fn062354()
 {
@@ -97,10 +111,9 @@ function void fn062354()
 				else if (objA0.countdown_value == 4)
 				{
 					// missed opportunity
-					earlyend.state = EARLYEND_NOCLEAR
+					EarlyEnd.UpdateRouteProgression(EARLYEND_NOCLEAR)
 					global.level_flag02 = 0
-					playSound(0x68)
-					player2.control_override = 0xff
+					player2.control_override = 0
 				}
 			}
 		}
@@ -113,6 +126,21 @@ function void fn062354()
 	}
 
 	base.fn062354()
+	
+	if (earlyend.state == EARLYEND_MGZCLEAR)
+	{
+		if (objA0.base_state == 0x04)
+		{
+			objA0.animation.sprite = 22
+			objA0.animation.frame = 0
+			objA0.animation.timer = 0
+		}
+		else
+		{
+			if (objA0.animation.sprite > 29)
+				objA0.animation.sprite = 29
+		}
+	}
 }
 
 //# address-hook(0x062458) end(0x06247a)

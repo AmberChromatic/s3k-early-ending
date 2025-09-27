@@ -34,6 +34,16 @@ function void Debugging.debugDraw()
 	{
 		key5_state = false
 	}
+	
+	if (Key6)
+	{
+		//global.active_saveslot = 0xffffe6f2
+		//dataselect.slot_selected = 8
+		
+		EarlyEnd.saveRouteProgressForSlot()
+	}
+	
+	debugLog("current state: " + earlyend.state)
 
 	base.Debugging.debugDraw()
 }

@@ -48,8 +48,7 @@ function void fn06c4be()
 	{
 		// missed chance, end route
 		u8[A0 + 0x46] = 0xff
-		earlyend.state = EARLYEND_NOCLEAR
-		playSound(0x68)
+		EarlyEnd.UpdateRouteProgression(EARLYEND_NOCLEAR)
 	}
 }
 
@@ -59,8 +58,7 @@ function void fn06d5a4()
 	if (boss.remaining_hits == 0 && earlyend.state == EARLYEND_HCZCLEAR)
 	{
 		playMusic(MUSIC_CTRL_STOP)
-		Audio.playAudio("snd_k", 1)
-		earlyend.state = EARLYEND_MGZCLEAR
+		EarlyEnd.UpdateRouteProgression(EARLYEND_MGZCLEAR)
 	}
 
 	base.fn06d5a4()

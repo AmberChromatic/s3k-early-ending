@@ -1,0 +1,88 @@
+function void EarlyEnd.saveRouteProgressForSlot()
+{
+	if (dataselect.slot_selected == 0)
+		return
+
+	u32 saved_progress = earlyend.state
+	string save = "slot_" + dataselect.slot_selected
+	System.savePersistentData(0, saved_progress, save, "progress", true)
+	
+	string message = stringformat("saved progress %d for %s", saved_progress, save)
+	System.writeDisplayLine(message)
+	
+	if (earlyend.state >= EARLYEND_MGZCLEAR)
+	{
+		A1 = global.active_saveslot
+		u8[A1 + 0x02] -= (1 << 4) // set to sonic & tails combo
+		SaveGameSlot()
+	}
+}
+
+function void EarlyEnd.loadRouteProgressForSlot()
+{
+	if (dataselect.slot_selected == 0)
+		return
+
+	string save = "slot_" + dataselect.slot_selected
+	earlyend.state = System.loadPersistentData(0, 10, save, "progress", true)
+	
+	string message = stringformat("loaded progress %d for %s", earlyend.state, save)
+	System.writeDisplayLine(message)
+}
+
+function void EarlyEnd.clearRouteProgressForSlot()
+{
+	string save = "slot_" + dataselect.slot_selected
+	System.savePersistentData(0, 0, save, "progress", true)
+	
+	string message = stringformat("erased progress for %s", save)
+	System.writeDisplayLine(message)
+}
+
+function void EarlyEnd.UpdateRouteProgression(u8 progress)
+{
+	if (!isMainCharacter(CHARACTER_SONIC))
+	{
+		earlyend.state = 0
+		return
+	}
+
+	earlyend.state = progress
+	
+	if (progress != EARLYEND_NOCLEAR)
+	{
+		Audio.playAudio("snd_k", 1)
+	}
+	else
+	{
+		playSound(0x68)
+	}
+
+	if (global.lock_on_state == 0 && global.active_saveslot != 0)
+	{
+		EarlyEnd.saveRouteProgressForSlot()
+	}
+}
+
+//# address-hook(0x00c10c) end(0x00c10c)
+function void DataSelect.SharedGameSlotContinue()
+{
+	EarlyEnd.loadRouteProgressForSlot()
+	base.DataSelect.SharedGameSlotContinue()
+}
+
+//# address-hook(0x00d8c4) end(0x00d90c)
+function void fn00d8c4()
+{
+	base.fn00d8c4()
+
+	if ((control.pad1.pressed & CONTROL_RIGHT) == 0)
+	{
+		if ((control.pad1.pressed & CONTROL_LEFT) == 0)
+		{
+			return
+		}
+		
+		EarlyEnd.clearRouteProgressForSlot()
+	}
+}

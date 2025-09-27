@@ -23,6 +23,8 @@ function void fn02b452()
 		{
 			player1.control_override = 0xff
 			control.player1 = (0x0404 | 0x2020)
+			A1 = 0xffffb000
+			u8[A1 + 0x2f] = 1
 		}
 	}
 
@@ -114,8 +116,8 @@ function void fn0620e4()
 		{
 			objA0.animation.sprite = 33
 			
-			earlyend.state = EARLYEND_AIZCLEAR
-			Audio.playAudio("snd_k", 1)
+			// progress route
+			EarlyEnd.UpdateRouteProgression(EARLYEND_AIZCLEAR)
 		}
 		if (objA0.countdown_value > 240)
 		{

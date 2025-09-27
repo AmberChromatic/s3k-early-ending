@@ -144,6 +144,16 @@ function void fn064310()
 		objA0.flags38 |= 0x10
 		playMusic(MUSIC_CTRL_FADEOUT)
 		objA0.value3b = 0
+		
+		D3.u16 = camera.position.x.u16 + getScreenCenterX()
+		D2.u16 = objA0.position.x.u16 - D3.u16
+		D0 = (D2.s16 < 0) ? 2 : 0
+		D2.u16 = abs(D2.s16)
+		objA0.velocity.x = abs(D2.s16 * 5)
+		
+		if (objA0.position.x.u16 > D3.u16)
+			objA0.velocity.x = -objA0.velocity.x
+		
 		return
 	}
 	
@@ -248,8 +258,7 @@ function void fn06438a()
 			--objA0.countdown_value
 			if (objA0.countdown_value == 0x40)
 			{
-				Audio.playAudio("snd_k", 1)
-				earlyend.state = EARLYEND_CNZCLEAR
+				EarlyEnd.UpdateRouteProgression(EARLYEND_CNZCLEAR)
 			}
 			
 			if (objA0.countdown_value < 0)

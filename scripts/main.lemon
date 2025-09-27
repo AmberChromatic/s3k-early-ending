@@ -1,4 +1,5 @@
 include debug
+include saving
 include aiz
 include hcz
 include mgz
@@ -132,4 +133,24 @@ function void waitForNextFrame()
 		control.pad2 = control.pad1
 		control.pad1 = 0
 	}
+}
+
+function bool Standalone.onWriteToSpriteTable(s16 px, s16 py, u16 renderQueue)
+{
+	// Characters in Data Select screen character selection
+	// The arrows and big portraits are compound sprites for this object, so set objA0.animation.sprite to an empty frame instead of "return true" to not skip rendering those.
+	if (objA0.update_address == 0x00d42c)
+	{
+		u16 characters = u16[A0 + 0x34]
+
+		if (characters <= CHARS_SONIC_ALONE && dataselect.slot_selected - 1 == objA0.flags2e)
+		{
+			string save = "slot_" + dataselect.slot_selected
+			string text = "* " + System.loadPersistentData(0, 10, save, "progress", true)
+			// Sonic alone
+			Renderer.drawText("sonic3_fontB:gradient", px, py - 130, text, 0x00ff00ff, 5, 0, renderQueue + 1, true, true)
+		}
+	}
+
+	return base.Standalone.onWriteToSpriteTable(px, py, renderQueue)
 }
