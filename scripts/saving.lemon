@@ -15,6 +15,7 @@ function void EarlyEnd.saveRouteProgressForSlot()
 		A1 = global.active_saveslot
 		u8[A1 + 0x02] -= (1 << 4) // set to sonic & tails combo
 		SaveGameSlot()
+		debugLog("also the slot is now sonic & tails mode lol")
 	}
 }
 

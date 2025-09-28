@@ -146,9 +146,14 @@ function bool Standalone.onWriteToSpriteTable(s16 px, s16 py, u16 renderQueue)
 		if (characters <= CHARS_SONIC_ALONE && dataselect.slot_selected - 1 == objA0.flags2e)
 		{
 			string save = "slot_" + dataselect.slot_selected
-			string text = "* " + System.loadPersistentData(0, 10, save, "progress", true)
-			// Sonic alone
-			Renderer.drawText("sonic3_fontB:gradient", px, py - 130, text, 0x00ff00ff, 5, 0, renderQueue + 1, true, true)
+			u8 progress = System.loadPersistentData(0, 10, save, "progress", true)
+			
+			
+			if (progress > EARLYEND_NOCLEAR && progress < EARLYEND_GAMECLEAR)
+			{
+				string text = "* " + progress
+				Renderer.drawText("sonic3_fontB:gradient", px, py - 130, text, 0xffffff22, 5, 0, renderQueue + 1, true, true)
+			}
 		}
 	}
 
