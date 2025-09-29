@@ -34,7 +34,7 @@ function void EarlyEnd.loadRouteProgressForSlot()
 function void EarlyEnd.clearRouteProgressForSlot()
 {
 	string save = "slot_" + dataselect.slot_selected
-	System.savePersistentData(0, 0, save, "progress", true)
+	System.removePersistentData(save, "progress", true)
 	
 	string message = stringformat("erased progress for %s", save)
 	System.writeDisplayLine(message)
