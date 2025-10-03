@@ -45,6 +45,11 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 	if (progress != EARLYEND_NOCLEAR)
 	{
 		Audio.playAudio("snd_k", 1)
+		
+		if (progress == EARLYEND_CNZCLEAR)
+		{
+			EarlyEnd.K()
+		}
 	}
 	else
 	{
@@ -55,6 +60,19 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 	{
 		EarlyEnd.saveRouteProgressForSlot()
 	}
+}
+
+function void EarlyEnd.K()
+{
+	debugDumpToFile("1_hello", 0, 0)
+	debugDumpToFile("2_can_anybody_hear_me", 0, 0)
+	debugDumpToFile("3_i_cant_feel_anything", 0, 0)
+	debugDumpToFile("4_i_cant_see_anything", 0, 0)
+	debugDumpToFile("5_i_cant_hear_anything", 0, 0)
+	debugDumpToFile("6_i_dont_know_where_i_am", 0, 0)
+	debugDumpToFile("7_its_cold", 0, 0)
+	debugDumpToFile("8_i_dont_know_what_happened", 0, 0)
+	debugDumpToFile("9_somebody_please_help", 0, 0)
 }
 
 //# address-hook(0x00c10c) end(0x00c10c)

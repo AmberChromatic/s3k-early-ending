@@ -47,6 +47,21 @@ function void fn062332()
 	}
 }
 
+//# address-hook(0x06237c) end(0x0623d6)
+function void fn06237c()
+{
+	base.fn06237c()
+	
+	if (earlyend.state == EARLYEND_MGZCLEAR)
+	{
+		if (objA0.base_state == 0x08)
+		{
+			// this only runs for a frame, but add some extra time for the player to hit knuckles
+			objA0.countdown_value += 0x30
+		}
+	}
+}
+
 //# address-hook(0x062354) end(0x06235a)
 function void fn062354()
 {
@@ -96,6 +111,8 @@ function void fn062354()
 						objA1.flags2a &= ~char.flag.FACING_LEFT
 						player1.control_override = 0xff
 						control.player1 = 0
+						
+						u8[A1 + 0x34] = 0 // disable invuln timer if it exists
 						
 						u8[A1 + 0x37] = 0x80 // protection flag
 						
