@@ -4,6 +4,7 @@ include aiz
 include hcz
 include mgz
 include cnz
+include icz
 include fight1
 
 global u8 earlyend.state
@@ -158,4 +159,17 @@ function bool Standalone.onWriteToSpriteTable(s16 px, s16 py, u16 renderQueue)
 	}
 
 	return base.Standalone.onWriteToSpriteTable(px, py, renderQueue)
+}
+
+//# address-hook(0x0067b6) end(0x0067ec)
+function void SetGlobalCharacters()
+{
+	if (earlyend.state >= EARLYEND_MGZCLEAR)
+	{
+		debugLog("the save slot is now sonic & tails mode lol")
+		levelselect.characters = 0
+		global.characters = levelselect.characters
+	}
+
+	base.SetGlobalCharacters()
 }

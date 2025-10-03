@@ -1,0 +1,18 @@
+//# address-hook(0x071bce) end(0x071c02)
+function void fn071bce()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		A1 = 0x071bbe
+		if (InitBoss(0x071bd8))
+			return
+		
+		A1 = 0x071bc6
+		InitBossArea()
+		move_area.right = 0x4720
+		UnloadObject()
+		return
+	}
+
+	base.fn071bce()
+}

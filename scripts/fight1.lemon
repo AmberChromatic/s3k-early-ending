@@ -66,6 +66,12 @@ function void fn063de0()
 				}
 			}
 			
+			A1 = 0xffffb04a
+			if (u8[A1 + 0x34] > 30)
+			{
+				u8[A1 + 0x34] = 30
+			}
+			
 			objA0.sprite_priority = 0
 			objA0.sprite_attributes |= sprite_attribute.PRIORITY
 			

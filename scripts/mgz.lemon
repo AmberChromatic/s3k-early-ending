@@ -13,6 +13,14 @@ function void fn06c354()
 		// give player a little bit more time to align correctly
 		objA0.countdown_value += 0x40
 	}
+	else if (earlyend.state == EARLYEND_MGZCLEAR)
+	{
+		// already cleared condition, just spawn the capsule
+		fn06c2e2()
+		objA0.position.x.u16 = 0
+		objA0.position.y.u16 = 0
+		playMusic(MUSIC_MGZ2)
+	}
 }
 
 //# address-hook(0x06c3ec) end(0x06c414)

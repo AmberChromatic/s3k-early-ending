@@ -9,14 +9,6 @@ function void EarlyEnd.saveRouteProgressForSlot()
 	
 	string message = stringformat("saved progress %d for %s", saved_progress, save)
 	System.writeDisplayLine(message)
-	
-	if (earlyend.state >= EARLYEND_MGZCLEAR)
-	{
-		A1 = global.active_saveslot
-		u8[A1 + 0x02] -= (1 << 4) // set to sonic & tails combo
-		SaveGameSlot()
-		debugLog("also the slot is now sonic & tails mode lol")
-	}
 }
 
 function void EarlyEnd.loadRouteProgressForSlot()
