@@ -126,6 +126,8 @@ function void fn062354()
 						A0 = backupA0
 						
 						hud.dirty.timer = 0
+						
+						Audio.enableAudioModifier(0, 0, "_hostile", 1.0)
 					}
 					
 					AddAsDynamicObject()

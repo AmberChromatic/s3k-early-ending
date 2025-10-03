@@ -148,7 +148,7 @@ function void fn064310()
 		objA0.mapping_offset = 0x066f36
 		objA0.animation.sprite = 2
 		objA0.flags38 |= 0x10
-		playMusic(MUSIC_CTRL_FADEOUT)
+		Audio.disableAudioModifier(0, 0)
 		objA0.value3b = 0
 		
 		D3.u16 = camera.position.x.u16 + getScreenCenterX()
@@ -193,6 +193,7 @@ function void fn06438a()
 			if (objA0.collision_attributes == 0)
 			{
 				playSound(0x5d)
+				playMusic(MUSIC_CTRL_FADEOUT)
 				
 				A1 = 0xffffb04a
 				objA0.value3b = 1
