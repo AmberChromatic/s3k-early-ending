@@ -30,6 +30,16 @@ function void fn08cc5a()
 
 	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
+		if (move_area.left < 0x3a10)
+		{
+			move_area.left += 4
+		}
+		
+		if (move_area.left > 0x3a10)
+		{
+			move_area.left = 0x3a10
+		}
+	
 		if ((level.framecounter % 3) == 0)
 		{
 			// explosion spawner
@@ -78,7 +88,7 @@ function void fn08cb9e()
 		u8[A0 + 0x29] = 0xff
 		u8[0xfffffaab] = 0xff
 		fn0685e2()
-		move_area.left = 0x3820
+		move_area.left = camera.position.x.u16
 		move_area.right = 0x3ae8 + getScreenExtend()
 
 		requestLoadingPatterns(0x60)		// LBZ1 boss and pre-boss cutscene sprites
