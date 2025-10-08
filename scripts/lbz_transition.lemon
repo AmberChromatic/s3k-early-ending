@@ -1,0 +1,311 @@
+//# address-hook(0x073056)
+function void fn073056()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		hud.dirty.timer = 0
+		// Wait for (exploding) Robotnik to leave the screen to the bottom
+		D0.u16 = objA0.position.y.u16 + 1
+		D1.u16 = camera.position.y.u16 + 0x140
+		if (D0.u16 <= D1.u16)
+		{
+			objA0.position.y.u16 = D0.u16
+			DrawObject()
+		}
+		else
+		{
+			objA0.position.y.u16 = D1.u16
+			objA0.flags38 |= 0x20				// Stop the explosions
+			objA0.sprite_attributes &= ~sprite_attribute.PRIORITY	// Draw him in background
+			objA0.update_address = 0x073058
+			
+			// "spawnChildObjects(0x081330)" replaced by:
+			spawnChildObject(0x0804b0, 0x00, 0, 35)			// Egg Mobile crane hook
+			spawnChildObject(0x0806da, 0x04, 0, 59)			// The Master emerald
+			
+			Kosinski.addToDMAQueue(0x1607d8, 0x93a0)	// Egg Mobile grabber claw sprites
+			Kosinski.addToDMAQueue(0x182be6, 0x9a00)			// Master Emerald sprite tiles
+			
+			// load master emerald palette
+			u32 source = 0x000a9dca					// dez emerald palette
+			copyMemory(0xfffffc2e, source, 0x0a)
+			u32 source2 = 0x000a9dbc					// dez emerald whites
+			copyMemory(0xfffffc20, source2, 0x06)
+			
+			playMusic(MUSIC_CTRL_FADEOUT)
+		}
+		
+		return
+	}
+	
+	base.fn073056()
+}
+
+//# address-hook(0x073058)
+function void fn073058()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		D0.u16 = (level.framecounter - 1) & 0x0f
+		if (D0.u16 == 0)
+		{
+			playSound(0xbe)
+		}
+	
+		// Wait for Robotnik to leave the screen to the top
+		D0.u16 = objA0.position.y.u16 - 1
+		D1.u16 = camera.position.y.u16 - 0x50
+		if (D0.u16 >= D1.u16)
+		{
+			objA0.position.y.u16 = D0.u16
+			DrawObject()
+			u16[A0 + 0x48] = 0
+		}
+		else
+		{
+			objA0.position.y.u16 = D1.u16
+			objA0.update_address = 0x072b46
+			objA0.countdown_value = 0x3f
+			player2.control_override = 0xff
+			
+			
+		}
+		return
+	}
+	
+	base.fn073058()
+}
+
+//# address-hook(0x072b96) end(0x072bb6)
+function void fn072b96()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		u8[0xfffffab8] |= 0x10 // despawn emerald
+		u8[0xfffffab8] |= 0x08 // despawn hook
+		
+		if (!level.results_done)
+			return
+		
+		if (level.default_music != MUSIC_KNUCKLES)
+		{
+			playMusic(MUSIC_KNUCKLES)
+			level.default_music = MUSIC_KNUCKLES
+			
+			stopCharacterWinPose(0xffffb000)
+			stopCharacterWinPose(0xffffb04a)
+			player1.control_override = 0xff
+			player2.control_override = 0xff
+			control.player1 = 0x0101		// CONTROL_UP, CONTROL_UP
+			control.player2 = 0x0101		// CONTROL_UP, CONTROL_UP
+			control.tails = 0x0101		// CONTROL_UP, CONTROL_UP
+		}
+		
+		D0.u16 = (level.framecounter - 1) & 0x0f
+		if (D0.u16 == 0)
+		{
+			playSound(0xbd)
+		}
+			
+		// Sky palette fade steps
+		if (u16[A0 + 0x48] == 48)
+		{
+			u16[0xfffffc00 + 0x3b * 2] = 0x0cac
+			u16[0xfffffc00 + 0x3c * 2] = 0x0c68
+			u16[0xfffffc00 + 0x3d * 2] = 0x0c46
+			u16[0xfffffc00 + 0x3e * 2] = 0x0a44
+		}
+		else if (u16[A0 + 0x48] == 96)
+		{
+			u16[0xfffffc00 + 0x3b * 2] = 0x0a88
+			u16[0xfffffc00 + 0x3c * 2] = 0x0a46
+			u16[0xfffffc00 + 0x3d * 2] = 0x0824
+			u16[0xfffffc00 + 0x3e * 2] = 0x0622
+		}
+		else if (u16[A0 + 0x48] == 144)
+		{
+			u16[0xfffffc00 + 0x3b * 2] = 0x0844
+			u16[0xfffffc00 + 0x3c * 2] = 0x0622
+			u16[0xfffffc00 + 0x3d * 2] = 0x0400
+			u16[0xfffffc00 + 0x3e * 2] = 0x0200
+		}
+
+		++u16[A0 + 0x48]
+		if (u16[A0 + 0x48] <= 160)
+			return
+
+		A1 = 0xffffb000
+		if ((u8[A1 + 0x2a] & char.flag.IN_AIR) == 0)
+		{
+			D0.s16 = camera.position.x.u16 + getScreenWidth() / 2 - objA1.position.x.u16
+			if (abs(D0.s16) < 4)
+			{
+				objA0.update_address = 0x072c68
+				objA0.countdown_callback = 0x072cbe
+				objA0.base_state = 0
+				u16[A0 + 0x48] = 0
+				control.player1 = 0
+				control.player2 = 0
+				control.tails = 0
+				
+				u8[0xfffffa88] = 0
+				StopObjectA1()
+
+				objA1.render_flags &= ~render_flag.FLIP_X
+				u8[A1 + 0x2a] &= ~char.flag.FACING_LEFT
+
+				A1 = 0xffffb000
+				u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+				u8[A1 + 0x24] = 0
+				u8[A1 + 0x23] = 0
+
+				A1 = 0xffffb04a
+				objA0.state = 0
+				u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+				u8[A1 + 0x24] = 0
+				u8[A1 + 0x23] = 0
+			}
+			else
+			{
+				D1 = (D0.s16 < 0) ? 2 : 3		// CONTROL_LEFT : CONTROL_RIGHT
+				control.player1.state |= (1 << D1.u8)
+			}
+		}
+		
+		return
+	}
+	
+	base.fn072b96()
+}
+
+//# address-hook(0x072c68) end(0x072c9c)
+function void fn072c68()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		D0.u16 = (level.framecounter - 1) & 0x0f
+		if (D0.u16 == 0)
+		{
+			playSound(0xbd)
+		}
+
+		fn072c9e()
+		return
+	}
+	
+	base.fn072c68()
+}
+
+//# address-hook(0x072cc6) end(0x072cd8)
+function void fn072cc6()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		if (objA0.base_state == 0x00)
+		{
+			++u16[A0 + 0x48]
+			if (u16[A0 + 0x48] < 160)
+			{
+				D0.u16 = (level.framecounter - 1) & 0x0f
+				if (D0.u16 == 0)
+				{
+					playSound(0xbd)
+				}
+				return
+			}
+		
+			setupObjectAttributesFull(0x08d562)
+			requestLoadingPatterns(0x77)		// Robotnik running + ship and boss explosion sprites
+			objA0.base_state = 0x02
+			u8[A0 + 0x38] = 0x10 // remove the robotnik head
+			objA0.position.x.u16 = camera.position.x.u16 + getScreenCenterX() + 0x40
+			objA0.position.y.u16 = camera.position.y.u16 - 0x20
+			fn0685e2()
+			objA0.render_flags &= ~render_flag.FLIP_X
+			playSound(0xd0)
+		}
+		else if (objA0.base_state == 0x02)
+		{
+			// moving down to player
+			objA0.position.y += 0x0000a000
+			UpdateMovementStraightSimple()
+			fn0847e6()
+			
+			if (objA0.position.y.u16 > 0x06ea)
+			{
+				objA0.base_state = 0x04
+				stopCharacterWinPose(0xffffb000)
+				stopCharacterWinPose(0xffffb04a)
+				
+				control.player1 = (0x0808 | 0x2020)
+				A1 = 0xffffb000
+				u8[A1 + 0x2f] = 1
+			}
+		}
+		else if (objA0.base_state == 0x04)
+		{
+			// waiting for player
+			UpdateMovementStraightSimple()
+			fn0847e6()
+			
+			A1 = 0xffffb000
+			u8[A1 + 0x2f] = 1
+			if (objA1.position.x.u16 > objA0.position.x.u16)
+			{
+				objA1.position.x.u16 = objA0.position.x.u16
+				objA1.velocity.x = 0
+				control.player1 = 0
+			}
+			
+			D0 = u8[A0 + 0x29]
+			if (D0.u8 != 0)
+			{
+				u8[A0 + 0x29] = 0
+				if (D0.u8 != 2)
+				{
+					
+					if (u8[A1 + 0x2e] == 0)
+					{
+						objA0.base_state = 0x06
+						playSound(0xd0)
+						
+						objA1.render_flags |= render_flag.FLIP_X
+						u8[A1 + 0x0a] |= 0x80
+						objA1.state = char.state.STANDING
+						objA1.flags2a &= ~char.flag.FACING_LEFT
+						u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+					}
+					
+				}
+			}
+			
+			Enemy.DrawOrUnload()
+		}
+		else if (objA0.base_state == 0x06)
+		{
+			// taking player to death egg
+			UpdateMovementStraightSimple()
+			fn0847e6()
+			
+			objA0.position.y -= 0x0000a000
+			
+			fn08d506()
+			objA1.position.x.u16 += 0x04
+			fn08d53e()
+			
+			A1 = 0xffffb04a
+			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_UPDATE)
+			objA1.state = char.state.TAILS_FLYDOWN
+			objA1.render_flags &= ~render_flag.FLIP_X
+			u8[A1 + 0x2a] &= ~char.flag.FACING_LEFT
+			
+			++objA1.position.x.u16
+			--objA1.position.y.u16
+		}
+		
+		DrawObject()
+		return
+	}
+	
+	base.fn072cc6()
+}

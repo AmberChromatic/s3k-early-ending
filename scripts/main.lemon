@@ -6,6 +6,7 @@ include mgz
 include cnz
 include icz
 include lbz
+include lbz_transition
 include fight1
 
 global u8 earlyend.state
