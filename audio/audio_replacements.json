@@ -3,4 +3,5 @@
 	"mus_k": { "File": "k.ogg", "Type": "Music", "LoopStart": "962259"},
 	"mus_k_hostile": { "File": "k_hostile.ogg", "Type": "Music", "LoopStart": "962259"},
 	"snd_k": { "File": "k2.ogg", "Type": "Sound", "Channel": "68"},
+	"snd_e": { "File": "e.ogg", "Type": "Sound", "Channel": "BD"},
 }

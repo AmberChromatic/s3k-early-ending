@@ -67,8 +67,6 @@ function void fn073058()
 			objA0.update_address = 0x072b46
 			objA0.countdown_value = 0x3f
 			player2.control_override = 0xff
-			
-			
 		}
 		return
 	}
@@ -105,29 +103,6 @@ function void fn072b96()
 		if (D0.u16 == 0)
 		{
 			playSound(0xbd)
-		}
-			
-		// Sky palette fade steps
-		if (u16[A0 + 0x48] == 48)
-		{
-			u16[0xfffffc00 + 0x3b * 2] = 0x0cac
-			u16[0xfffffc00 + 0x3c * 2] = 0x0c68
-			u16[0xfffffc00 + 0x3d * 2] = 0x0c46
-			u16[0xfffffc00 + 0x3e * 2] = 0x0a44
-		}
-		else if (u16[A0 + 0x48] == 96)
-		{
-			u16[0xfffffc00 + 0x3b * 2] = 0x0a88
-			u16[0xfffffc00 + 0x3c * 2] = 0x0a46
-			u16[0xfffffc00 + 0x3d * 2] = 0x0824
-			u16[0xfffffc00 + 0x3e * 2] = 0x0622
-		}
-		else if (u16[A0 + 0x48] == 144)
-		{
-			u16[0xfffffc00 + 0x3b * 2] = 0x0844
-			u16[0xfffffc00 + 0x3c * 2] = 0x0622
-			u16[0xfffffc00 + 0x3d * 2] = 0x0400
-			u16[0xfffffc00 + 0x3e * 2] = 0x0200
 		}
 
 		++u16[A0 + 0x48]
@@ -204,13 +179,31 @@ function void fn072cc6()
 		if (objA0.base_state == 0x00)
 		{
 			++u16[A0 + 0x48]
-			if (u16[A0 + 0x48] < 160)
+			// Sky palette fade steps
+			if (u16[A0 + 0x48] == 48)
 			{
-				D0.u16 = (level.framecounter - 1) & 0x0f
-				if (D0.u16 == 0)
-				{
-					playSound(0xbd)
-				}
+				u16[0xfffffc00 + 0x3b * 2] = 0x0cac
+				u16[0xfffffc00 + 0x3c * 2] = 0x0c68
+				u16[0xfffffc00 + 0x3d * 2] = 0x0c46
+				u16[0xfffffc00 + 0x3e * 2] = 0x0a44
+			}
+			else if (u16[A0 + 0x48] == 96)
+			{
+				u16[0xfffffc00 + 0x3b * 2] = 0x0a88
+				u16[0xfffffc00 + 0x3c * 2] = 0x0a46
+				u16[0xfffffc00 + 0x3d * 2] = 0x0824
+				u16[0xfffffc00 + 0x3e * 2] = 0x0622
+			}
+			else if (u16[A0 + 0x48] == 144)
+			{
+				u16[0xfffffc00 + 0x3b * 2] = 0x0844
+				u16[0xfffffc00 + 0x3c * 2] = 0x0622
+				u16[0xfffffc00 + 0x3d * 2] = 0x0400
+				u16[0xfffffc00 + 0x3e * 2] = 0x0200
+			}
+			
+			if (u16[A0 + 0x48] < 260)
+			{
 				return
 			}
 		
@@ -222,7 +215,6 @@ function void fn072cc6()
 			objA0.position.y.u16 = camera.position.y.u16 - 0x20
 			fn0685e2()
 			objA0.render_flags &= ~render_flag.FLIP_X
-			playSound(0xd0)
 		}
 		else if (objA0.base_state == 0x02)
 		{
@@ -231,15 +223,26 @@ function void fn072cc6()
 			UpdateMovementStraightSimple()
 			fn0847e6()
 			
+			if (objA0.position.y.u16 > camera.position.y.u16 + getScreenCenterY())
+			{
+				stopCharacterWinPose(0xffffb000)
+				stopCharacterWinPose(0xffffb04a)
+				control.player1 = 0
+			}
+			
 			if (objA0.position.y.u16 > 0x06ea)
 			{
 				objA0.base_state = 0x04
-				stopCharacterWinPose(0xffffb000)
-				stopCharacterWinPose(0xffffb04a)
 				
 				control.player1 = (0x0808 | 0x2020)
 				A1 = 0xffffb000
 				u8[A1 + 0x2f] = 1
+				
+			}
+			
+			if ((global.framecounter.low & 0x0f) == 0)
+			{
+				playSound(0xc6)
 			}
 		}
 		else if (objA0.base_state == 0x04)
@@ -255,6 +258,11 @@ function void fn072cc6()
 				objA1.position.x.u16 = objA0.position.x.u16
 				objA1.velocity.x = 0
 				control.player1 = 0
+			}
+			
+			if (objA1.velocity.y >= 0)
+			{
+				control.player1 = (0x0808 | 0x0808)
 			}
 			
 			D0 = u8[A0 + 0x29]
@@ -274,6 +282,8 @@ function void fn072cc6()
 						objA1.state = char.state.STANDING
 						objA1.flags2a &= ~char.flag.FACING_LEFT
 						u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+						
+						u16[A0 + 0x48] = 0 // reset for fade to dark
 					}
 					
 				}
@@ -284,10 +294,82 @@ function void fn072cc6()
 		else if (objA0.base_state == 0x06)
 		{
 			// taking player to death egg
+			if (u16[A0 + 0x48] > 0x2a0)
+			{
+				// trigger death egg
+				TriggerNextZone(0x1700)		// Death Egg boss act
+				return
+			}
+			
+			++u16[A0 + 0x48] // timer for camera movement and fade
+	
+			if (camera.position.y.u16 < 0x05c0)
+			{
+				level.palettefx.timer_1 = 0x7f // "freeze" palette cycling
+			
+				palette_fade.offset = 0x00
+				palette_fade.count = 0x40
+				if ((u16[A0 + 0x48] % 0x10) == 0)
+				{
+					u32 backupA0 = A0
+					for (u8 k = 0; k < 2; ++k)
+					{
+						A0 = ((k == 0) ? 0xfffffc00 : 0xfffff080) + palette_fade.offset
+						for (u8 i = 0; i <= palette_fade.count; ++i)
+						{
+							FadeOutColor()
+						}
+						
+						// get air related stuff too
+						if (EXTENDED_CHARACTER_PALETTES)
+						{
+							for (u8 k2 = 0; k2 < 2; ++k2)
+							{
+								A0 = (k2 == 0) ? 0x802000 : 0x802300
+								for (u8 i2 = 0; i2 < 0xc0; ++i2)
+								{
+									FadeOutColor()
+								}
+							}
+						}
+
+						if (globalComponentTintColorR > 0)
+							globalComponentTintColorR = max(globalComponentTintColorR - 0x25, 0)
+						else if (globalComponentTintColorG > 0)
+							globalComponentTintColorG = max(globalComponentTintColorG - 0x25, 0)
+						else if (globalComponentTintColorB > 0)
+							globalComponentTintColorB = max(globalComponentTintColorB - 0x25, 0)
+
+						if (globalComponentAddedColorR > 0)
+							globalComponentAddedColorR = max(globalComponentAddedColorR - 0x25, 0)
+						else if (globalComponentAddedColorG > 0)
+							globalComponentAddedColorG = max(globalComponentAddedColorG - 0x25, 0)
+						else if (globalComponentAddedColorB > 0)
+							globalComponentAddedColorB = max(globalComponentAddedColorB - 0x25, 0)
+					}
+					A0 = backupA0
+				}
+			}
+			
 			UpdateMovementStraightSimple()
 			fn0847e6()
 			
-			objA0.position.y -= 0x0000a000
+			objA0.position.y -= 0x0000c000
+			
+			if (u16[A0 + 0x48] & 0x01)
+			{
+				if (level.vertical_wrap > 0x0580)
+				{
+					camera.position.y.u16 -= 1
+					level.vertical_wrap = camera.position.y.u16
+				}
+				else
+				{
+					level.vertical_wrap = 0x0580
+				}
+				
+				move_area.bottom.current = level.vertical_wrap
+			}
 			
 			fn08d506()
 			objA1.position.x.u16 += 0x04
@@ -299,7 +381,6 @@ function void fn072cc6()
 			objA1.render_flags &= ~render_flag.FLIP_X
 			u8[A1 + 0x2a] &= ~char.flag.FACING_LEFT
 			
-			++objA1.position.x.u16
 			--objA1.position.y.u16
 		}
 		
