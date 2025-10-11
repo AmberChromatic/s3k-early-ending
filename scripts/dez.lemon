@@ -1,0 +1,319 @@
+//# address-hook(0x02d9a0) end(0x02d9c6)
+function void fn02d9a0()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		if (global.zone_act == 0x1700)
+		{
+			// Make DEZ Boss act a single act zone now
+			A1 = 0xffff0000 + u16[A0 + 0x48]
+			--u16[A1 + 0x30]
+			UnloadObject()
+			return
+		}
+	}
+
+	base.fn02d9a0()
+}
+
+//# address-hook(0x07fd68) end(0x07fd82)
+function void fn07fd68()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		if (objA0.base_state == 0x00)
+		{
+			// init
+			player1.control_override = 0xff
+			player2.control_override = 0xff
+			control.player1 = 0
+			control.player2 = 0
+			control.tails = 0
+			
+			A1 = 0xffffb000
+			objA1.state = char.state.STANDING
+			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+			
+			A1 = 0xffffb04a
+			objA1.state = char.state.STANDING
+			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+			
+			++objA0.countdown_value
+			if (objA0.countdown_value < 0x30)
+				return
+			
+			move_area.left = camera.position.x.u16
+			move_area.right = camera.position.x.u16
+			
+			setupObjectAttributesFull(0x08d562)
+			requestLoadingPatterns(0x77)		// Robotnik running + ship and boss explosion sprites
+			objA0.base_state = 0x02
+			u8[A0 + 0x38] = 0x10 // remove the robotnik head
+			objA0.position.x.u16 = camera.position.x.u16 + getScreenCenterX()
+			objA0.position.y.u16 = camera.position.y.u16 + getScreenHeight() + 0x20
+			fn0685e2()
+			objA0.render_flags = (render_flag.WORLD | render_flag.FLIP_X)
+			objA0.sprite_priority = 0x000
+			objA0.sprite_attributes &= ~sprite_attribute.PRIORITY
+			objA0.countdown_value = 0
+		}
+		else if (objA0.base_state == 0x02)
+		{
+			// bringing player up
+			
+			UpdateMovementStraightSimple()
+			fn0847e6()
+			
+			objA0.position.y -= 0x0000c000
+			
+			fn08d506()
+			fn08d53e()
+			
+			if (objA0.position.y.u16 < camera.position.y.u16 + getScreenCenterY())
+			{
+				objA0.base_state = 0x04
+				
+				if (allocDynamicObjectStd())
+				{
+					// Spawn Big Arms
+					objA1.update_address = 0x074262
+				}
+				
+				if (allocDynamicObjectStd())
+				{
+					// Create the object that fades out level music and starts the boss theme afterwards
+					objA1.update_address = 0x085b30
+					u8[A1 + 0x2c] = MUSIC_BIGARMS
+				}
+			}
+		}
+		else if (objA0.base_state == 0x04)
+		{
+			// waiting for big arms to attack
+			UpdateMovementStraightSimple()
+			fn0847e6()
+			
+			if (objA0.countdown_value < 0x6b)
+				fn08d506()
+			
+			if (objA0.countdown_value < 0x4b)
+				fn08d53e()
+			
+			++objA0.countdown_value
+			if (objA0.countdown_value == 0x4b)
+			{
+				A1 = 0xffffb000
+				objA1.state = char.state.LOOKING_UP
+				u8[A1 + 0x2e] &= ~control_flag.DISABLE_ANIMATION
+			}
+			
+			if (objA0.countdown_value == 0x6b)
+			{
+				A1 = 0xffffb000
+				objA1.velocity.x = -0x300
+				objA1.velocity.y = -0x400
+				objA1.state = char.state.ROLLING
+				objA1.flags2a |= char.flag.IN_AIR
+				u8[A1 + 0x2e] = 0
+				u8[A1 + 0x40] = 0
+				u8[A1 + 0x40] = 1
+				
+				char.hitbox_extends.x = char.hitbox.x.ROLLING
+				char.hitbox_extends.y = char.hitbox.y.ROLLING
+				playSound(SFX_JUMP)
+			}
+			
+			if (objA0.countdown_value >= 0x8b)
+			{
+				// big arm wrecks the ship
+				objA0.update_address = 0x08565e
+				objA0.sprite_priority = 0x80
+				objA0.countdown_value = 0x3f
+				objA0.countdown_callback = 0x07cc26
+				
+				player1.control_override = 0
+				player2.control_override = 0
+
+				// "spawnSimpleChildObjects(0x083fee)" replaced by:
+				spawnSimpleChildObjects(0x083d84, 1)		// Boss explosion generator
+				
+				
+			}
+		}
+		
+		DrawObject()
+		return
+	}
+	
+	base.fn07fd68()
+}
+
+//# address-hook(0x0742a8) end(0x074308)
+function void fn0742a8()
+{
+	base.fn0742a8()
+	
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		objA0.position.x.u16 += 0x30
+	}
+}
+
+//# address-hook(0x07432a) end(0x07435a)
+function void fn07432a()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		// intro
+		MoveWithGravity20()
+		++objA0.countdown_value
+		if (objA0.countdown_value < 0x60)
+			return
+
+		u8[A0 + 0x0a] |= 0x80
+		objA0.velocity.y = 0
+		objA0.collision_attributes = collision.size.24x24
+		objA0.render_flags ^= render_flag.FLIP_X
+
+		// "spawnChildObjects(0x07513c)" replaced by:
+		spawnChildObject(0x074c00, 0x00, 4, -52)
+
+		fn074360()
+		return
+	}
+	
+	base.fn07432a()
+}
+
+//# address-hook(0x074562) end(0x074574)
+function void fn074562()
+{
+	base.fn074562()
+	
+	// the jump
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		D3.u16 = camera.position.x.u16 + getScreenCenterX()
+		D2.u16 = objA0.position.x.u16 - D3.u16
+		D0 = (D2.s16 < 0) ? 2 : 0
+		D2.u16 = abs(D2.s16)
+		objA0.velocity.x = abs(D2.s16 * 2)
+		
+		if (objA0.position.x.u16 > D3.u16)
+			objA0.velocity.x = -objA0.velocity.x
+			
+		objA0.velocity.y = -0x900
+	}
+}
+
+
+
+//# address-hook(0x074576) end(0x0745a0)
+function void fn074576()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		// jumping with player
+		UpdateMovementSimple()
+		if (objA0.velocity.y > 0)
+		{
+			objA0.base_state = 0x24
+			A1 = 0xffff0000 + u16[A0 + 0x44]
+			u8[A1 + 0x3c] = 0
+		}
+	
+		return
+	}
+	
+	base.fn074576()
+}
+
+//# address-hook(0x0745e2) end(0x074616)
+function void fn0745e2()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		if (objA0.position.y.u16 < camera.foreground.y.u16 + 0x90 || objA0.position.y.u16 > 0xf000)
+		{
+			// falling
+			UpdateMovementSimple()
+			return
+		}
+
+		objA0.base_state = 0x26
+		objA0.flags38 |= 0x02
+		camera.screenshake.state = 0x14
+		objA0.countdown_value = 0x03
+
+		playSound(0x61)
+		
+		return
+	}
+	
+	base.fn0745e2()
+}
+
+//# address-hook(0x074640) end(0x0746c2)
+function void fn074640()
+{
+	base.fn074640()
+	
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		objA0.countdown_value += 0x20
+	}
+}
+
+//# address-hook(0x074376) end(0x0743ca)
+function void fn074376()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		objA0.render_flags ^= render_flag.FLIP_X
+		D0.u8 = objA0.value39
+		++objA0.value39
+
+		bool isKnucklesFight = false
+		bool useNormalAttack = isKnucklesFight ? ((D0 & 0x04) == 0) : ((D0 & 0x02) == 0)
+		if (useNormalAttack)
+		{
+			// Normal attack
+			objA0.base_state = 0x0a
+			objA0.flags38 &= ~0x08
+			objA0.flags38 &= ~0x04
+			objA0.countdown_value = 0xaf + getScreenExtend()
+			objA0.countdown_callback = 0x074360
+			fn074f24()
+		}
+		else
+		{
+			// Move at the top, then at the bottom
+			objA0.base_state = 0x0c
+			objA0.value39 = 0
+			objA0.velocity.y = 0
+			objA0.countdown_callback = 0x074428
+			objA0.position.y.u16 = camera.position.y.u16
+			fn074f82()
+		}
+		return
+	}
+	
+	base.fn074376()
+}
+
+//# address-hook(0x074542) end(0x074558)
+function void fn074542()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		++objA0.countdown_value
+		UpdateMovementStraightSimple()
+		if (objA0.countdown_value > 0x60)
+		{
+			fn074360()
+		}
+		return
+	}
+	
+	base.fn074542()
+}
