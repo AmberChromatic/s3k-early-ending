@@ -60,6 +60,10 @@ function void fn07fd68()
 		else if (objA0.base_state == 0x02)
 		{
 			// bringing player up
+			if ((level.framecounter.low & 0x0f) == 0)
+			{
+				playSound(0xc6)
+			}
 			
 			UpdateMovementStraightSimple()
 			fn0847e6()
@@ -132,7 +136,12 @@ function void fn07fd68()
 				objA0.countdown_callback = 0x07cc26
 				
 				player1.control_override = 0
-				player2.control_override = 0
+
+				u32 backupA0 = A0
+				A0 = 0xffffb04a
+				u8[A0 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+				RespawnTails()
+				A0 = backupA0
 
 				// "spawnSimpleChildObjects(0x083fee)" replaced by:
 				spawnSimpleChildObjects(0x083d84, 1)		// Boss explosion generator

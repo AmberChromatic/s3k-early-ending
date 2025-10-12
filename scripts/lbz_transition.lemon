@@ -93,7 +93,7 @@ function void fn072b96()
 			stopCharacterWinPose(0xffffb000)
 			stopCharacterWinPose(0xffffb04a)
 			player1.control_override = 0xff
-			player2.control_override = 0xff
+			player2.control_override = 1
 			control.player1 = 0x0101		// CONTROL_UP, CONTROL_UP
 			control.player2 = 0x0101		// CONTROL_UP, CONTROL_UP
 			control.tails = 0x0101		// CONTROL_UP, CONTROL_UP
@@ -240,7 +240,7 @@ function void fn072cc6()
 				
 			}
 			
-			if ((global.framecounter.low & 0x0f) == 0)
+			if ((level.framecounter.low & 0x0f) == 0)
 			{
 				playSound(0xc6)
 			}
@@ -293,6 +293,11 @@ function void fn072cc6()
 		}
 		else if (objA0.base_state == 0x06)
 		{
+			if ((level.framecounter.low & 0x0f) == 0)
+			{
+				playSound(0xc6)
+			}
+		
 			// taking player to death egg
 			if (u16[A0 + 0x48] > 0x2a0)
 			{
