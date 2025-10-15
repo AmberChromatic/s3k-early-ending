@@ -1,0 +1,222 @@
+//# address-hook(0x074262) end(0x074276)
+function void fn074262()
+{
+	if (level.trigger00 == 1)
+	{
+		fn074fd2()
+		DrawObject()
+	
+		// trigger second phase
+		level.trigger00 = 2
+		objA0.countdown_value = 0x60
+		objA0.state = 0x80
+		playSound(0x84)
+		camera.screenshake.state.hi = 0xff
+		
+		// backup boss palette
+		copyMemory(0xfffffca0, 0xfffffc20, 0x20)
+		return
+	}
+	else if (level.trigger00 == 2)
+	{
+		// transforming during hit flash
+		fn074fd2()
+		DrawObject()
+		
+		EarlyEnd.TransformGlow(2)
+		
+		if (objA0.state == 0)
+		{
+			level.trigger00 = 3
+			camera.screenshake.state.hi = 0
+			
+			objA0.base_state = 0x0a
+			objA0.velocity.x = 0
+			objA0.velocity.y = -0x80
+			objA0.flags38 &= ~0x08
+			objA0.flags38 &= ~0x04
+			objA0.countdown_value = 0xaf + getScreenExtend()
+			objA0.countdown_callback = 0x074360
+			s16[A0 + 0x3a] = 8
+			
+			A1 = 0xffffb000
+			u8[A1 + 0x37] = 0x80
+		}
+		
+		return
+	}
+	else if (level.trigger00 == 3)
+	{
+		EarlyEnd.TransformGlow(8)
+		boss.remaining_hits = 0xff
+	}
+	else if (level.trigger00 == 4)
+	{
+		EarlyEnd.TransformGlow(8)
+		boss.remaining_hits = 0xff
+	
+		A1 = 0xffffb000
+		objA1.base_state = base_state.NORMAL
+		objA1.velocity.x = 0
+		objA1.velocity.y = 0
+		objA1.groundspeed = 0
+		objA1.state = char.state.ROLLING
+		u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_UPDATE)
+
+	#if STANDALONE
+		// Remove spindash cloud
+		u32 dustAddress = isMainCharacter(CHARACTER_TAILS) ? 0xffffcc9e : 0xffffcc54
+		u8[dustAddress + 0x20] = 0
+	#endif
+	}
+	
+	base.fn074262()
+}
+
+//# address-hook(0x074fd2) end(0x07508c)
+function void fn074fd2()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		if (boss.remaining_hits == 0xff)
+		{
+			if (objA0.base_state < 0x08 || u8[A0 + 0x28] > 0)
+				return
+				
+			if (objA0.state == 0)
+			{
+				objA0.state = 0x3c
+				playSound(0x5d)
+				playSound(0x74)
+
+				A1 = 0xffff0000 + u16[A0 + 0x44]
+				u8[A1 + 0x28] = 0
+			}
+
+			--objA0.state
+			
+			if (objA0.state == 0)
+			{
+				u8[A0 + 0x28] = u8[A0 + 0x25]
+				A1 = 0xffff0000 + u16[A0 + 0x44]
+				objA1.collision_attributes = (collision.flag.THREAT | collision.size.32x16)
+			}
+			return
+		}
+	
+		if (boss.remaining_hits == 0)
+		{	
+			if (objA0.state == 0)
+			{
+				u8[A0 + 0x2a] = 0
+				level.trigger00 = 1 // trigger second phase
+			
+				if (objA0.base_state == 0x0a)
+				{
+					u16[A0 + 0x3a] = 0x08
+				}
+				objA0.state = 0x3c
+				playSound(0x6e)
+
+				A1 = 0xffff0000 + u16[A0 + 0x44]
+				u8[A1 + 0x28] = 0
+			}
+
+			objA0.flags2a |= 0x40
+			Boss.updateHitFlashing(6, 0x075092, 0x07509e)
+
+			--objA0.state
+			if (objA0.state == 0)
+			{
+				objA0.flags2a &= ~0x40
+				u8[A0 + 0x28] = u8[A0 + 0x25]
+				A1 = 0xffff0000 + u16[A0 + 0x44]
+				objA1.collision_attributes = (collision.flag.THREAT | collision.size.32x16)
+			}
+			return
+		}
+		
+		
+	}
+	
+	base.fn074fd2()
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// glowing stuff, taken from stone
+function void EarlyEnd.TransformGlow(u8 speed)
+{
+	++level.trigger0e
+	if (level.trigger0f == 0 && (level.trigger0e % speed) == 0)
+	{
+		EarlyEnd.FadePaletteToGreen(0xfffffc20, 16) // fade to green
+		
+		if (level.trigger0e > speed * 4)
+		{
+			level.trigger0f = 1
+			level.trigger0e = 0
+		}
+	}
+	
+	if (level.trigger0f == 1 && (level.trigger0e % speed) == 0)
+	{
+		fadeColorsTowardsTargetUniform(0xfffffc20, 0xfffffca0, 16) // fade to color
+		
+		if (level.trigger0e > speed * 4)
+		{
+			level.trigger0f = 0
+			level.trigger0e = 0
+		}
+	}
+}
+
+function void EarlyEnd.FadePaletteToGreen(u32 address, u8 numColors)
+{
+	A1 = address
+	for (u8 i = 0; i < numColors; ++i)
+	{
+		EarlyEnd.FadeColorToGreen()
+	}
+}
+
+function void EarlyEnd.FadeColorToGreen()
+{
+	// Fade to white // NO I WANT GREEN INSTEAD
+	u16 color = u16[A1]
+#if STANDALONE
+	color = makeNormalPackedColor(color)
+#endif
+	if (color != 0x0eee)
+	{
+		
+		if ((color & 0x00e0) < 0x00e0)
+		{
+			color += 0x0020
+		}
+		if ((color & 0x0e00) < 0x0c00)
+		{
+			color += 0x0200
+		}
+		
+		if ((color & 0x000e) > 0x0000)
+		{
+			color -= 0x0200
+		}
+
+		
+		u16[A1] = color
+	}
+	A1 += 2
+}

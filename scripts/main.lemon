@@ -8,6 +8,7 @@ include icz
 include lbz
 include lbz_transition
 include dez
+include dez_cutscene
 include fight1
 
 global u8 earlyend.state

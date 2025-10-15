@@ -165,6 +165,8 @@ function void fn0742a8()
 	if (earlyend.state >= EARLYEND_CNZCLEAR)
 	{
 		objA0.position.x.u16 += 0x30
+		
+		//boss.remaining_hits = 1
 	}
 }
 
@@ -212,6 +214,11 @@ function void fn074562()
 			objA0.velocity.x = -objA0.velocity.x
 			
 		objA0.velocity.y = -0x900
+		
+		if (level.trigger00 == 4)
+		{
+			objA0.velocity.y = -0x500
+		}
 	}
 }
 
@@ -224,6 +231,12 @@ function void fn074576()
 	{
 		// jumping with player
 		UpdateMovementSimple()
+		
+		if (level.trigger00 == 4)
+		{
+			UpdateMovementSimple() // do it more
+		}
+		
 		if (objA0.velocity.y > 0)
 		{
 			objA0.base_state = 0x24
@@ -246,6 +259,11 @@ function void fn0745e2()
 		{
 			// falling
 			UpdateMovementSimple()
+			
+			if (level.trigger00 == 4)
+			{
+				UpdateMovementSimple() // do it more
+			}
 			return
 		}
 
@@ -270,6 +288,13 @@ function void fn074640()
 	if (earlyend.state >= EARLYEND_CNZCLEAR)
 	{
 		objA0.countdown_value += 0x20
+		
+		if (level.trigger00 >= 3)
+		{
+			level.trigger00 = 4
+			fn074562()
+			u8[A0 + 0x30] = 1
+		}
 	}
 }
 
