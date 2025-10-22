@@ -26,6 +26,7 @@ function void fn07fd68()
 			// init
 			player1.control_override = 0xff
 			player2.control_override = 0xff
+			global.passing_floor = 0xff
 			control.player1 = 0
 			control.player2 = 0
 			control.tails = 0
@@ -35,8 +36,8 @@ function void fn07fd68()
 			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
 			
 			A1 = 0xffffb04a
-			objA1.state = char.state.STANDING
-			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+			objA1.position.x.u16 = camera.position.x.u16 + getScreenCenterX() - 0x30
+			objA1.position.y.u16 = camera.position.y.u16 + getScreenHeight() + 0x40
 			
 			++objA0.countdown_value
 			if (objA0.countdown_value < 0x30)
@@ -73,8 +74,21 @@ function void fn07fd68()
 			fn08d506()
 			fn08d53e()
 			
+			A1 = 0xffffb04a
+			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_UPDATE)
+			objA1.state = char.state.TAILS_FLYDOWN
+			objA1.render_flags &= ~render_flag.FLIP_X
+			u8[A1 + 0x2a] &= ~char.flag.FACING_LEFT
+			
+			if (objA1.position.y.u16 > camera.position.y.u16 + getScreenCenterY())
+				--objA1.position.y.u16
+			
 			if (objA0.position.y.u16 < camera.position.y.u16 + getScreenCenterY())
 			{
+				u8[A1 + 0x2e] = 0
+				objA1.state = char.state.ROLLING
+				objA1.velocity.y = 0
+			
 				objA0.base_state = 0x04
 				
 				if (allocDynamicObjectStd())
@@ -109,6 +123,9 @@ function void fn07fd68()
 				A1 = 0xffffb000
 				objA1.state = char.state.LOOKING_UP
 				u8[A1 + 0x2e] &= ~control_flag.DISABLE_ANIMATION
+				
+				control.player2 = 0x0101		// CONTROL_UP, CONTROL_UP
+				control.tails = 0x0101		// CONTROL_UP, CONTROL_UP
 			}
 			
 			if (objA0.countdown_value == 0x6b)
@@ -136,12 +153,7 @@ function void fn07fd68()
 				objA0.countdown_callback = 0x07cc26
 				
 				player1.control_override = 0
-
-				u32 backupA0 = A0
-				A0 = 0xffffb04a
-				u8[A0 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
-				RespawnTails()
-				A0 = backupA0
+				player2.control_override = 0
 
 				// "spawnSimpleChildObjects(0x083fee)" replaced by:
 				spawnSimpleChildObjects(0x083d84, 1)		// Boss explosion generator
@@ -215,7 +227,7 @@ function void fn074562()
 			
 		objA0.velocity.y = -0x900
 		
-		if (level.trigger00 == 4)
+		if (level.trigger00 >= 4 && level.trigger00 <= 8)
 		{
 			objA0.velocity.y = -0x500
 		}
@@ -232,7 +244,7 @@ function void fn074576()
 		// jumping with player
 		UpdateMovementSimple()
 		
-		if (level.trigger00 == 4)
+		if (level.trigger00 >= 4 && level.trigger00 <= 8)
 		{
 			UpdateMovementSimple() // do it more
 		}
@@ -260,7 +272,7 @@ function void fn0745e2()
 			// falling
 			UpdateMovementSimple()
 			
-			if (level.trigger00 == 4)
+			if (level.trigger00 >= 4 && level.trigger00 <= 8)
 			{
 				UpdateMovementSimple() // do it more
 			}
@@ -283,17 +295,53 @@ function void fn0745e2()
 //# address-hook(0x074640) end(0x0746c2)
 function void fn074640()
 {
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		if (level.trigger00 == 9)
+		{
+			objA0.base_state = 0x2a
+			u8[A0 + 0x30] = 0
+			objA0.position.y.u16 -= 0x10
+			objA0.flags38 &= ~0x02
+			
+			objA0.render_flags |= render_flag.FLIP_X
+		
+			fn074562()
+			u8[A0 + 0x30] = 1
+			objA0.velocity.x = 0
+			objA0.velocity.y = -0x300
+			objA0.countdown_value = 0x50
+			objA0.flags2a |= 0x40
+			level.trigger00 = 10
+			
+			playSound(SFX_SUPERTRANSFORM)
+			
+			playMusic(MUSIC_CTRL_FADEOUT)
+			return
+		}
+	}
+
 	base.fn074640()
 	
 	if (earlyend.state >= EARLYEND_CNZCLEAR)
 	{
 		objA0.countdown_value += 0x20
 		
-		if (level.trigger00 >= 3)
+		if (level.trigger00 >= 3 && level.trigger00 <= 7)
 		{
-			level.trigger00 = 4
+			level.trigger00 += 1
 			fn074562()
 			u8[A0 + 0x30] = 1
+		}
+		else if (level.trigger00 == 8)
+		{
+			// trigger dizzy state
+			spawnChildObject(0x02418e, 0x00, 0, 0)
+			player1.control_override = 0xff
+			control.player1 = 0
+			control.player2 = 0
+			control.tails = 0
+			u8[A0 + 0x30] = 0
 		}
 	}
 }

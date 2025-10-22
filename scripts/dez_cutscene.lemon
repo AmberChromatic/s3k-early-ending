@@ -1,6 +1,77 @@
+//# address-hook(0x02418e)
+function void EarlyEnding.UpdateDEZSonicDizzy()
+{
+	if (global.zone_act.apparent == 0x1700)
+	{
+		if (objA0.base_state == 0x00)
+		{
+			A1 = 0xffffb000
+			u8[A1 + 0x05] = base_state.NORMAL
+			objA1.velocity.x = 0
+			objA1.velocity.y = -0x400
+			objA1.state = char.state.GOT_HURT
+			objA1.flags2a |= char.flag.IN_AIR
+			objA1.flags2a &= ~char.flag.ON_OBJECT
+			u8[A1 + 0x2e] = 0
+			u8[A1 + 0x3d] = 0
+			u8[A1 + 0x40] = 0
+
+			playSound(0x9b)
+			
+			level.trigger00 = 0x09
+			
+			objA0.base_state = 0x02
+		}
+		else if (objA0.base_state == 0x02)
+		{
+			// player hit, wait for him to land
+			A1 = 0xffffb000
+			if (objA1.state == char.state.STANDING)
+			{
+				if (u8[A1 + 0x2e] == 0)
+				{
+					u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+					objA1.sprite_priority = 0x380
+					objA1.animation.sprite = 0xc1
+					
+					// spawn dizzy stars
+					Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
+					spawnSimpleChildObjects(0x06563a, 1)
+				}
+				
+				objA0.base_state = 0x04
+				player1.control_override = 0xff
+				earlyend.swapcontrols = true
+			}
+		}
+		else if (objA0.base_state == 0x04)
+		{
+			// waiting for tails to do his thing
+			A1 = 0xffffb000
+			if (u8[A1 + 0x34] <= 123) // invuln flag check
+			{
+				u8[A1 + 0x34] = 124
+			}
+		}
+		
+		
+		if (global.level_started > -0x6f)
+			global.level_started -= 0x10
+		else
+			global.level_started = -0x7f
+		return
+	}
+	
+	// just in case...
+	base.EarlyEnding.UpdateDEZSonicDizzy()
+}
+
 //# address-hook(0x074262) end(0x074276)
 function void fn074262()
 {
+	//debugLog(objA0.base_state)
+	//debugLog(objA0.countdown_value)
+	
 	if (level.trigger00 == 1)
 	{
 		fn074fd2()
@@ -13,13 +84,23 @@ function void fn074262()
 		playSound(0x84)
 		camera.screenshake.state.hi = 0xff
 		
+		// make sure player is released
+		objA0.flags38 &= ~0x02
+		u8[A0 + 0x30] = 0
+		
+		if (u8[0xffffb000 + 0x2e] & (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_UPDATE))
+			u8[0xffffb000 + 0x2e] &= ~(control_flag.DISABLE_INTERACTION | control_flag.DISABLE_UPDATE)
+		
 		// backup boss palette
 		copyMemory(0xfffffca0, 0xfffffc20, 0x20)
+		
+		A1 = 0xffffb000
+		u8[A1 + 0x37] = 0x80
 		return
 	}
 	else if (level.trigger00 == 2)
 	{
-		// transforming during hit flash
+		// powering up during hit flash
 		fn074fd2()
 		DrawObject()
 		
@@ -38,9 +119,7 @@ function void fn074262()
 			objA0.countdown_value = 0xaf + getScreenExtend()
 			objA0.countdown_callback = 0x074360
 			s16[A0 + 0x3a] = 8
-			
-			A1 = 0xffffb000
-			u8[A1 + 0x37] = 0x80
+			objA0.value39 = 0
 		}
 		
 		return
@@ -50,7 +129,7 @@ function void fn074262()
 		EarlyEnd.TransformGlow(8)
 		boss.remaining_hits = 0xff
 	}
-	else if (level.trigger00 == 4)
+	else if (level.trigger00 >= 4 && level.trigger00 <= 8)
 	{
 		EarlyEnd.TransformGlow(8)
 		boss.remaining_hits = 0xff
@@ -69,8 +148,131 @@ function void fn074262()
 		u8[dustAddress + 0x20] = 0
 	#endif
 	}
+	else if (level.trigger00 == 9)
+	{
+		EarlyEnd.TransformGlow(8)
+		boss.remaining_hits = 0xff
+	}
+	else if (level.trigger00 == 10)
+	{
+		EarlyEnd.TransformGlow(8)
+		boss.remaining_hits = 0xff
+		DrawObject()
+		
+		UpdateMovementStraightSimple()
+		if (objA0.velocity.y < 0)
+			objA0.velocity.y = min(objA0.velocity.y + 0x10, 0)
+			
+		--super.palettefx.timer.tails
+		if (super.palettefx.timer.tails < 0)
+		{
+			UpdatePaletteEffects.SuperForm.applyGeneral(0x02, 0x003a8a)
+
+			super.palettefx.timer.tails = 0x0b
+			super.palettefx.frame.tails = (super.palettefx.frame.tails + 6) % 36
+		}
+		
+		--objA0.countdown_value
+		if (objA0.countdown_value < 0)
+		{
+			level.trigger00 = 11
+			objA0.countdown_value = 0x100
+			
+			addPatternLoadingCue(0x083d64)
+			
+			playSound(0x93)
+			u8[A0 + 0x30] = 0
+		}
+		
+		return
+	}
+	else if (level.trigger00 == 11)
+	{
+		camera.screenshake.state.hi = 0xff
+		EarlyEnd.TransformGlow(2)
+		
+		--super.palettefx.timer.tails
+		if (super.palettefx.timer.tails < 0)
+		{
+			UpdatePaletteEffects.SuperForm.applyGeneral(0x02, 0x003a8a)
+
+			super.palettefx.timer.tails = 0x0b
+			super.palettefx.frame.tails = (super.palettefx.frame.tails + 6) % 36
+		}
+		
+		A1 = 0xffffb04a
+		if (objA1.position.y.u16 > objA0.position.y.u16 - 0x08)
+			--objA1.position.y.u16
+			
+		objA1.flags2a |= char.flag.FACING_LEFT
+		
+		--objA0.countdown_value
+		if (objA0.countdown_value == 0x20)
+		{
+			objA0.flags2a |= 0x80
+		
+			objA0.value39 = 2
+			D1 = objA0.value39
+			A2 = 0x082ef4 + D1.s16
+
+			if (allocDynamicObjectStd())
+			{
+				objA1.update_address = 0x082f78
+				u16[A1 + 0x46] = A0.u16
+				u16[A1 + 0x42] = u16[(A2+=2)-2] - 0x10
+				u16[A1 + 0x44] = u16[(A2+=2)-2] - 0x80
+			}
+			
+			A1 = 0xffffb04a
+			objA1.state = char.state.TAILS_TRANSFORM
+			
+			playSound(0x4e)
+		}
+		
+		if (objA0.countdown_value < 0)
+		{
+			Object.TriggerUnloading()
+			return
+		}
+		
+		DrawObject()
+		return
+	}
+	else if (level.trigger00 == 12)
+	{
+		return
+	}
 	
 	base.fn074262()
+}
+
+//# address-hook(0x0743ce) end(0x0743e0)
+function void fn0743ce()
+{
+	if (level.trigger00 == 3)
+	{
+		// try to target the player a little more here
+		if (s16[A0 + 0x3a] != 8)
+		{
+			s16[A0 + 0x3a] = 0
+			
+			A1 = 0xffffb000
+			D0.u16 = objA0.position.y.u16 + 0x20
+			D1.u16 = objA1.position.y.u16
+			
+			if (D0.u16 < D1.u16)
+			{
+				++objA0.position.y.u16
+			}
+			else if (D0.u16 > D1.u16)
+			{
+				--objA0.position.y.u16
+			}
+			
+			objA0.velocity.y = 0
+		}
+	}
+		base.fn0743ce()
 }
 
 //# address-hook(0x074fd2) end(0x07508c)
@@ -142,12 +344,120 @@ function void fn074fd2()
 	base.fn074fd2()
 }
 
+//# address-hook(0x074f24) end(0x074f70)
+function void fn074f24()
+{
+	if (earlyend.swapcontrols)
+	{
+		D0.u16 = 2
+		u16[A0 + 0x3a] = D0.u16
+		D2.s16 = (objA0.render_flags & render_flag.FLIP_X) ? -0x68 : getScreenWidth() + 0x68
+
+		objA0.position.x.u16 = camera.position.x.u16 + D2.s16
+		objA0.position.y.u16 = camera.position.y.u16 + u16[0x074f72 + D0.u16]
+		objA0.velocity.x = (objA0.render_flags & render_flag.FLIP_X) ? 0x300 : -0x300
+		objA0.velocity.y = u16[0x074f7a + D0.u16]
+		u16[A0 + 0x3c] = 0x08
+		return
+	}
+	
+	base.fn074f24()
+}
 
 
+//# address-hook(0x0858f8) end(0x08593e)
+function void fn0858f8()
+{
+	if (earlyend.swapcontrols && global.zone_act.apparent == 0x1700)
+	{
+		D3.u16 = objA0.position.x.u16 + u16[(A1+=2)-2]
+		D5.u16 = D3.u16 + u16[(A1+=2)-2]
+		D4.u16 = objA0.position.y.u16 + u16[(A1+=2)-2]
+		D6.u16 = D4.u16 + u16[(A1+=2)-2]
 
+		D0 = 0
+		A2 = 0xffffb04a
+		D1.u16 = u16[A2 + 0x10]
+		D2.u16 = u16[A2 + 0x14]
+		fn08592c()
 
+		D0 <<= 16
+		A2 = 0xffffb04a
+		D1.u16 = u16[A2 + 0x10]
+		D2.u16 = u16[A2 + 0x14]
+		fn08592c()
+		return
+	}
+	
+	base.fn0858f8()
+}
 
+//# address-hook(0x074c8c) end(0x074cc8)
+function void fn074c8c()
+{
+	if (earlyend.swapcontrols)
+	{
+		// Grab main character
+		objA0.update_address = 0x074ccc
 
+		A1 = 0xffff0000 + u16[A0 + 0x44]
+		u8[A1 + 0x30] = 0xff
+		u8[A1 + 0x05] = 0x1e
+		u16[A1 + 0x2e] = 0x40
+		u32[A1 + 0x34] = 0x074562
+
+		A1 = 0xffffb04a
+		objA1.velocity.x = 0
+		objA1.velocity.y = 0
+		objA1.groundspeed = 0
+		objA1.state = char.state.ROLLING
+		u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_UPDATE)
+
+	#if STANDALONE
+		// Remove spindash cloud
+		u32 dustAddress = isMainCharacter(CHARACTER_TAILS) ? 0xffffcc9e : 0xffffcc54
+		u8[dustAddress + 0x20] = 0
+	#endif
+
+		fn074ccc()
+		
+		return
+	}
+	
+	base.fn074c8c()
+}
+
+//# address-hook(0x074ccc) end(0x074cfe)
+function void fn074ccc()
+{
+	if (earlyend.swapcontrols)
+	{
+		A1 = 0xffff0000 + u16[A0 + 0x44]
+		if (u8[A1 + 0x30] != 0)
+		{
+			if (u8[A1 + 0x2a] & 0x80)
+			{
+				UnloadObject()
+				return
+			}
+
+			MoveAndFlipWithParent()
+			A1 = 0xffffb04a
+			objA1.position.x.u16 = objA0.position.x.u16
+			objA1.position.y.u16 = objA0.position.y.u16
+		}
+		else
+		{
+			objA0.update_address = 0x074d04
+			objA0.countdown_value = 0x40
+			fn074d04()
+		}
+		
+		return
+	}
+	
+	base.fn074ccc()
+}
 
 
 
