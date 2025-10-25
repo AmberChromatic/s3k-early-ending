@@ -187,7 +187,7 @@ function void fn0643a4()
 //# address-hook(0x06438a) end(0x0643a2)
 function void fn06438a()
 {
-	if (earlyend.state >= EARLYEND_CNZCLEAR && global.level_flag02 == 3)
+	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 	{
 		if (objA0.value3b == 0)
 		{
