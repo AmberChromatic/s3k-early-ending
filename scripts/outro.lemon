@@ -1,0 +1,116 @@
+//# address-hook(0x05fe82) end(0x05fea6)
+function void fn05fe82()
+{
+	base.fn05fe82()
+	
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		outro.ending_type = -2
+	}
+}
+
+//# address-hook(0x05b1f4) end(0x05b202)
+function void fn05b1f4()
+{
+	base.fn05b1f4()
+	
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		debugLog(1)
+		outro.wait_time = 0
+	}
+}
+
+//# address-hook(0x05b204) end(0x05b282)
+function void fn05b204()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		fn05b29e()
+		return
+	}
+
+	base.fn05b204()
+}
+
+//# address-hook(0x05f566) end(0x05f5ae)
+function void fn05f566()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		System.savePersistentData(0, 32, "fullgame", "end", true)
+		UnloadObject()
+		return
+	}
+	
+	base.fn05f566()
+}
+
+//# address-hook(0x05f2f8) end(0x05f31a)
+function void fn05f2f8()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		return
+	}
+
+	base.fn05f2f8()
+}
+
+//# address-hook(0x05ab6e) end(0x05abba)
+function void fn05ab6e()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		fn05aeea()
+
+		if (u16[0xffffeec4] == 0)
+		{
+			LoadTileContentDefault()
+			return
+		}
+
+		u16[0xffffeec4] = 0
+		palette_fade.range = 0x003f
+		u16[0xffffeeda] = 0x15
+		u8[0xffffee50] = 0xff
+		level.palettefx.state = 0xff
+		u16[0xffffeec0] += 4
+
+		fn05abc0()
+		return
+	}
+	
+	base.fn05ab6e()
+}
+
+//# address-hook(0x05abc0) end(0x05ac6c)
+function void fn05abc0()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR)
+	{
+		u32 backupA0 = A0
+		FadeOutPalette()
+		A0 = backupA0
+
+		--u16[0xffffeeda]
+		if (s16[0xffffeeda] >= 0)
+		{
+			LoadTileContentDefault()
+			return
+		}
+
+		zeroMemory(0xffffac00, 0x400)
+		zeroMemory(0xffffb04a, 0x1fb4)
+
+		if (global.super_emeralds < 7)
+		{
+			u16[0xffffeec0] = 0x24
+			fn05adc0()
+		}
+		
+		return
+	}
+	
+	base.fn05abc0()
+}

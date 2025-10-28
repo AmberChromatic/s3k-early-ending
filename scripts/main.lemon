@@ -9,6 +9,8 @@ include lbz
 include lbz_transition
 include dez
 include dez_cutscene
+include outro
+include clear
 include fight1
 
 global u8 earlyend.state
@@ -23,6 +25,8 @@ constant u8 EARLYEND_HCZCLEAR = 2
 constant u8 EARLYEND_MGZCLEAR = 3
 constant u8 EARLYEND_CNZCLEAR = 4
 constant u8 EARLYEND_GAMECLEAR = 5
+
+global bool earlyend.crashma = false
 
 
 
@@ -175,7 +179,38 @@ function void SetGlobalCharacters()
 		debugLog("the save slot is now sonic & tails mode lol")
 		levelselect.characters = 0
 		global.characters = levelselect.characters
+		
+		if (global.zone_act.apparent == 0x0d01)
+		{
+			levelselect.characters = 2
+			global.characters = levelselect.characters
+		}
 	}
 
 	base.SetGlobalCharacters()
+}
+
+function void EarlyEnding.Crashma()
+{
+	// crashma game
+	
+	earlyend.crashma = true
+}
+
+//# address-hook(0x01aada) end(0x01ab18)
+function void UpdateGameObjects()
+{
+	if (earlyend.crashma)
+		return
+		
+	base.UpdateGameObjects()
+}
+
+//# address-hook(0x04e408) end(0x04e456)
+function void UpdateLevelDisplay()
+{
+	if (earlyend.crashma)
+		return
+	
+	base.UpdateLevelDisplay()
 }

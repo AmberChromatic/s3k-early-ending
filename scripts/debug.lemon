@@ -2,7 +2,11 @@ global bool key5_state
 
 function void Init()
 {
+	earlyend.crashma = false
 	playMusic(level.default_music)
+	
+	global.chaos_emeralds = 7
+	
 	base.Init()
 }
 
@@ -56,14 +60,33 @@ function void Debugging.debugDraw()
 		System.writeDisplayLine("slot 8 selected")
 	}
 	
-	debugLog("current state (var): " + earlyend.state)
+	if (Key3)
+	{
+		System.savePersistentData(0, 32, "fullgame", "end", true)
+		System.writeDisplayLine("Enabled Permanent Save")
+	}
 	
-	string save = "slot_" + dataselect.slot_selected
-	u32 state = System.loadPersistentData(0, 10, save, "progress", true)
-	if (dataselect.slot_selected != 0)
-		debugLog("current state (sram): " + state)
+	if (Key4)
+	{
+		System.removePersistentData("fullgame", "end", true)
+		System.writeDisplayLine("Erased Permanent save")
+	}
+	
+	if (System.loadPersistentData(0, 64, "fullgame", "end", true) == 32)
+	{
+		debugLog("game clear")
+	}
 	else
-		debugLog("playing on no save")
+	{
+		debugLog("current state (var): " + earlyend.state)
+		
+		string save = "slot_" + dataselect.slot_selected
+		u32 state = System.loadPersistentData(0, 10, save, "progress", true)
+		if (dataselect.slot_selected != 0)
+			debugLog("current state (sram): " + state)
+		else
+			debugLog("playing on no save")
+	}
 
 	base.Debugging.debugDraw()
 }

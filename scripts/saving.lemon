@@ -75,6 +75,14 @@ function void EarlyEnd.K()
 	debugDumpToFile("9_somebody_please_help", 0, 0)
 }
 
+function bool EarlyEnd.getGameClear()
+{
+	if (System.loadPersistentData(0, 64, "fullgame", "end", true) == 32)
+		return true
+	
+	return false
+}
+
 //# address-hook(0x00c10c) end(0x00c10c)
 function void DataSelect.SharedGameSlotContinue()
 {

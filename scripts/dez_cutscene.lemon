@@ -3,6 +3,18 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 {
 	if (global.zone_act.apparent == 0x1700)
 	{
+		if (level.trigger00 == 12)
+		{
+			++objA0.countdown_value
+			debugLog(1)
+			
+			if (objA0.countdown_value > 0x80)
+			{
+				TriggerNextZone(0x0d01)
+				return
+			}
+		}
+	
 		if (objA0.base_state == 0x00)
 		{
 			A1 = 0xffffb000
@@ -231,6 +243,7 @@ function void fn074262()
 		
 		if (objA0.countdown_value < 0)
 		{
+			level.trigger00 = 12
 			Object.TriggerUnloading()
 			return
 		}
