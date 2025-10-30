@@ -8,7 +8,7 @@ function void EarlyEnd.saveRouteProgressForSlot()
 	System.savePersistentData(0, saved_progress, save, "progress", true)
 	
 	string message = stringformat("saved progress %d for %s", saved_progress, save)
-	System.writeDisplayLine(message)
+	//System.writeDisplayLine(message)
 }
 
 function void EarlyEnd.loadRouteProgressForSlot()
@@ -20,7 +20,7 @@ function void EarlyEnd.loadRouteProgressForSlot()
 	earlyend.state = System.loadPersistentData(0, 10, save, "progress", true)
 	
 	string message = stringformat("loaded progress %d for %s", earlyend.state, save)
-	System.writeDisplayLine(message)
+	//System.writeDisplayLine(message)
 }
 
 function void EarlyEnd.clearRouteProgressForSlot()
@@ -29,7 +29,7 @@ function void EarlyEnd.clearRouteProgressForSlot()
 	System.removePersistentData(save, "progress", true)
 	
 	string message = stringformat("erased progress for %s", save)
-	System.writeDisplayLine(message)
+	//System.writeDisplayLine(message)
 }
 
 function void EarlyEnd.UpdateRouteProgression(u8 progress)

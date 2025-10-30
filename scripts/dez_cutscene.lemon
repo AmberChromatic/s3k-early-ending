@@ -6,7 +6,7 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 		if (level.trigger00 == 12)
 		{
 			++objA0.countdown_value
-			debugLog(1)
+			//debugLog(1)
 			
 			if (objA0.countdown_value > 0x80)
 			{
@@ -81,8 +81,8 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 //# address-hook(0x074262) end(0x074276)
 function void fn074262()
 {
-	debugLog(objA0.base_state)
-	debugLog(objA0.countdown_value)
+	//debugLog(objA0.base_state)
+	//debugLog(objA0.countdown_value)
 	
 	if (level.trigger00 == 1)
 	{

@@ -16,7 +16,7 @@ function void fn05b1f4()
 	
 	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
-		debugLog(1)
+		//debugLog(1)
 		outro.wait_time = 0
 	}
 }

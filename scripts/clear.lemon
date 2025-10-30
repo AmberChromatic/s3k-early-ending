@@ -90,6 +90,8 @@ function void MainMenuBG.Run()
 	{
 		global.game_mode = 0x0c			// Main Game
 		global.zone_act = 0x0d01		// Outro for Sonic/Tails
+		
+		playMusic(MUSIC_CTRL_STOP)
 
 		while (true)
 		{
