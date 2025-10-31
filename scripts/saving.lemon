@@ -64,6 +64,8 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 
 function void EarlyEnd.K()
 {
+	return
+
 	debugDumpToFile("1_hello", 0, 0)
 	debugDumpToFile("2_can_anybody_hear_me", 0, 0)
 	debugDumpToFile("3_i_cant_feel_anything", 0, 0)
