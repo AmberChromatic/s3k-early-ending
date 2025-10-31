@@ -24,7 +24,7 @@ function void fn02b452()
 			player1.control_override = 0xff
 			control.player1 = (0x0404 | 0x2020)
 			A1 = 0xffffb000
-			u8[A1 + 0x2f] = 1
+			u8[A1 + 0x2f] = 2
 		}
 	}
 
