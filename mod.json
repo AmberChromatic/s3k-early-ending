@@ -1,13 +1,13 @@
 {
 	"Metadata":
 	{
-		"Name": "Classic Mode Sample Mod",
-		"UniqueID": "hazelspooder-classic-mode-sample-mod",
-		"Author": "Eukaryot",
-		"Description": "Makes the game (except the menus) run in the original resolution of 320x224.",
-		"URL": "have fun with what you're about to witness -hs",
-		"ModVersion": "1.0.0.0",
-		"GameVersion": "22.08.21.0"
+		"Name": "Sonic 3: Early Ending",
+		"UniqueID": "amberchromatic-s3k-early-ending",
+		"Author": "AmberChromatic, StarrydustNova, BriceTAS",
+		"Description": "Drown Knuckles.",
+		"URL": "yes a release is being worked\non, please give it some time",
+		"ModVersion": "1.0.0",
+		"GameVersion": "26.03.28.0"
 	},
 	"Settings":
 	{
@@ -26,5 +26,36 @@
 				}
 			}
 		]
+	},
+	
+	"OtherMods":
+	{
+		"Origins-Parity-Galore":
+		{
+			"DisplayName": "Origins Parity Galore",
+			"IsRequired": "0",
+			"Priority": "Lower"
+		},
+		
+		"mrgrassman14-misc-fixes-and-tweaks":
+		{
+			"DisplayName": "Misc. Fixes and Tweaks",
+			"IsRequired": "0",
+			"Priority": "Lower"
+		},
+		
+		"mrgrassman14-misc-fixes-and-tweaks-compatibility":
+		{
+			"DisplayName": "AND YER LITTLE MF&T COMPAT ADDON, TOO!",
+			"IsRequired": "0",
+			"Priority": "Lower"
+		},
+		
+		"wonder-power-fixes-tweaks":
+		{
+			"DisplayName": "Wonder Power's Micro-Mods",
+			"IsRequired": "0",
+			"Priority": "Lower"
+		},
 	}
 }

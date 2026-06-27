@@ -44,7 +44,7 @@ function void fn07fd68()
 				return
 			
 			move_area.left = camera.position.x.u16
-			move_area.right = camera.position.x.u16
+			move_area.right = camera.position.x.u16 + getScreenExtend() * 2
 			
 			setupObjectAttributesFull(0x08d562)
 			requestLoadingPatterns(0x77)		// Robotnik running + ship and boss explosion sprites

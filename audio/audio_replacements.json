@@ -1,7 +1,7 @@
 {
 	// MUSIC
-	"mus_k": { "File": "k.ogg", "Type": "Music", "LoopStart": "962259"},
-	"mus_k_hostile": { "File": "k_hostile.ogg", "Type": "Music", "LoopStart": "962259"},
+	"mus_k": { "File": "k.ogg", "Type": "Music", "LoopStart": "2694141"},
+	"mus_k_alt": { "File": "k_alt.ogg", "Type": "Music", "LoopStart": "2694141"},
 	"snd_k": { "File": "k2.ogg", "Type": "Sound", "Channel": "68"},
 	"snd_e": { "File": "e.ogg", "Type": "Sound", "Channel": "BD"},
 }

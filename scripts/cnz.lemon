@@ -8,6 +8,9 @@ function void fn06229e()
 		return
 	}
 	
+	if (earlyend.state >= EARLYEND_MGZCLEAR)
+		System.setGlobalVariableValueByName("MFT_CNZ2_AltCutscene", 0) // disable the water coming up
+	
 	base.fn06229e()
 }
 
@@ -143,8 +146,6 @@ function void fn062354()
 						A0 = backupA0
 						
 						hud.dirty.timer = 0
-						
-						Audio.enableAudioModifier(0, 0, "_hostile", 1.0)
 					}
 					
 					AddAsDynamicObject()
@@ -189,7 +190,9 @@ function void fn062458()
 {
 	if (global.level_flag02 == 1)
 	{
-		// break the barrier. teach the red man a lesson.
+		// break the barrier.
+		player1.control_override = 0 // unlock controls just in case
+		player2.control_override = 0
 		UnloadObject()
 		return
 	}

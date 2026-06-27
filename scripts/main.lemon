@@ -15,7 +15,7 @@ include fight1
 
 global u8 earlyend.state
 
-global bool earlyend.streamermode = true
+global bool earlyend.streamermode = false
 
 global bool earlyend.swapcontrols
 
@@ -28,68 +28,9 @@ constant u8 EARLYEND_GAMECLEAR = 5
 
 global bool earlyend.crashma = false
 
-
+#define EARLYENDING_ACTIVE
 
 //# script-feature-level(2)
-
-global u16 ClassicModeSampleMode.screenWidth
-
-
-function void scriptMainEntryPoint()
-{
-	if (SHCSplash.shouldShowUpAfterStartup())
-		SHCSplash.showSplashScreen()
-
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	System.setupCallFrame("GameModeControlLoop")
-}
-
-
-function void EntryFunctions.dataSelect()
-{
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	base.EntryFunctions.dataSelect()
-}
-
-
-function void EntryFunctions.actSelect()
-{
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	base.EntryFunctions.actSelect()
-}
-
-
-function void EntryFunctions.competitionMode()
-{
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	base.EntryFunctions.competitionMode()
-}
-
-
-function void EntryFunctions.blueSphereGame()
-{
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	base.EntryFunctions.blueSphereGame()
-}
-
-
-function void EntryFunctions.levelSelect()
-{
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	base.EntryFunctions.levelSelect()
-}
-
-
-function void Standalone.onResumeAfterPause()
-{
-	Renderer.setScreenSize(ClassicModeSampleMode.screenWidth, 224)
-	base.Standalone.onResumeAfterPause()
-}
-
-
-
-
-
 
 function u64 Standalone.getModdedSoundKey(u64 soundKey, u8 sfxId, u8 soundRegType)
 {
@@ -101,10 +42,10 @@ function u64 Standalone.getModdedSoundKey(u64 soundKey, u8 sfxId, u8 soundRegTyp
 
 	if (sfxId == MUSIC_KNUCKLES)
 	{
-		if (earlyend.state == EARLYEND_MGZCLEAR)
+		if (earlyend.state >= EARLYEND_MGZCLEAR)
 			return "mus_k"
 		else if (earlyend.state >= EARLYEND_CNZCLEAR)
-			return "mus_k_hostile"
+			return "mus_k_alt"
 	}
 
 	return base.Standalone.getModdedSoundKey(soundKey, sfxId, soundRegType)
@@ -140,7 +81,7 @@ function void CheckDistanceToPlayers()
 	base.CheckDistanceToPlayers()
 }
 
-
+/*
 function void waitForNextFrame()
 {
 	base.waitForNextFrame()
@@ -151,6 +92,7 @@ function void waitForNextFrame()
 		control.pad1 = 0
 	}
 }
+*/
 
 function bool Standalone.onWriteToSpriteTable(s16 px, s16 py, u16 renderQueue)
 {
@@ -199,7 +141,6 @@ function void SetGlobalCharacters()
 function void EarlyEnding.Crashma()
 {
 	// crashma game
-	
 	earlyend.crashma = true
 }
 

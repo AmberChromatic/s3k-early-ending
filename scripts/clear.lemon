@@ -70,19 +70,6 @@ function void TitleScreen()
 	base.TitleScreen()
 }
 
-//# address-hook(0x005fb2) end(0x0067b4)
-function void GameMode.MainGame()
-{
-	if (EarlyEnd.getGameClear())
-	{
-		Game.returnToMainMenu()
-		return
-	}
-	
-	earlyend.swapcontrols = false
-
-	base.GameMode.MainGame()
-}
 
 function void MainMenuBG.Run()
 {
@@ -346,5 +333,6 @@ function void fn00d96a()
 		objA0.value3a = 14
 		D1.u8 = 14
 	}
-		base.fn00d96a()
+	
+	base.fn00d96a()
 }

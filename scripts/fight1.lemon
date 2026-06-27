@@ -151,7 +151,7 @@ function void fn064310()
 		objA0.mapping_offset = 0x066f36
 		objA0.animation.sprite = 2
 		objA0.flags38 |= 0x10
-		Audio.disableAudioModifier(0, 0)
+		Audio.enableAudioModifier(0, 0, "_alt", 1.0)
 		objA0.value3b = 0
 		
 		D3.u16 = camera.position.x.u16 + getScreenCenterX()
