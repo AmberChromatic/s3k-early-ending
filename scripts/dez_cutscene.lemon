@@ -40,15 +40,20 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 			A1 = 0xffffb000
 			if (objA1.state == char.state.STANDING)
 			{
-				if (u8[A1 + 0x2e] == 0)
+				if (objA1.state == char.state.STANDING)
 				{
-					u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
-					objA1.sprite_priority = 0x380
-					objA1.animation.sprite = 0xc1
-					
-					// spawn dizzy stars
-					Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
-					spawnSimpleChildObjects(0x06563a, 1)
+					if (u8[A1 + 0x2e] == 0)
+					{
+						u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
+						objA1.sprite_priority = 0x380
+						objA1.animation.sprite = 0xbf
+						objA1.animation.timer = 60
+						u8[A1 + 0x34] = 124
+						
+						// spawn dizzy stars
+						Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
+						spawnSimpleChildObjects(0x06563a, 1)
+					}
 				}
 				
 				objA0.base_state = 0x04
@@ -58,8 +63,18 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 		}
 		else if (objA0.base_state == 0x04)
 		{
-			// waiting for tails to do his thing
+			// sonic dizzy, waiting for tails to do his thing
 			A1 = 0xffffb000
+			if (objA1.animation.timer > 0)
+				--objA1.animation.timer
+			
+			if (objA1.animation.timer > 16)
+				objA1.animation.sprite = 0xbf
+			else if (objA1.animation.timer > 8)
+				objA1.animation.sprite = 0xc1
+			else
+				objA1.animation.sprite = 0xc2
+			
 			if (u8[A1 + 0x34] <= 123) // invuln flag check
 			{
 				u8[A1 + 0x34] = 124

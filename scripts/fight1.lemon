@@ -31,6 +31,7 @@ function void fn064c24()
 {
 	if (global.zone_act.apparent == 0x0301)
 	{
+		// unload spindash dust as it shares vram space with the dizzy birds
 		UnloadObject()
 		return
 	}
@@ -54,18 +55,32 @@ function void fn063de0()
 					if (u8[A1 + 0x2e] == 0)
 					{
 						u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION)
+						objA1.state = char.state.RUNNING
+						objA1.animation.sprite = 0xbf
+						objA1.animation.timer = 60
+						u8[A1 + 0x34] = 124
 						
 						// spawn dizzy stars
 						Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
 						spawnSimpleChildObjects(0x06563a, 1)
+						
 					}
 					
-					objA1.animation.sprite = 0xc1
+					if (objA1.animation.timer > 0)
+						--objA1.animation.timer
+					
+					if (objA1.animation.timer > 16)
+						objA1.animation.sprite = 0xbf
+					else if (objA1.animation.timer > 8)
+						objA1.animation.sprite = 0xc1
+					else
+						objA1.animation.sprite = 0xc2
 				}
 			
 				if (u8[A1 + 0x34] <= 123) // invuln flag check
 				{
 					u8[A1 + 0x34] = 124
+					System.setGlobalVariableValueByName("SonicGoesToSleepCounter", 0)
 				}
 			}
 			
@@ -83,11 +98,6 @@ function void fn063de0()
 				player2.control_override = 0
 			}
 		}
-		
-		if (global.level_started > -0x6f)
-			global.level_started -= 0x10
-		else
-			global.level_started = -0x7f
 	}
 	
 	base.fn063de0()
@@ -230,36 +240,41 @@ function void fn06438a()
 				u8[A6 + 0x2a] = 0
 				u32[A6 + 0x10] = objA0.position.x
 				
-				objA0.velocity.y = 0x10
+				objA0.position.y.u16 = water.height.current
+				objA0.velocity.y = 0
 				
 				s16[A0 + 0x40] = 0x02
-				objA0.value3e = 0x40
+				objA0.value3e = 0x30
 			}
 		}
 		else if (objA0.value3b == 2)
 		{
-			UpdateMovementStraightSimple()
-			if (objA0.velocity.x > -0x60)
+			A1 = 0xffffb04a
+			if (objA1.state == char.state.STANDING)
 			{
-				objA0.velocity.x -= 0x01
-			}
-			else
-			{
-				objA0.velocity.x = -0x60
+				if (objA1.animation.frame > 0x10)
+					objA1.animation.frame = 0
+				if (objA1.animation.sprite == 0xad)
+					objA1.animation.sprite = 0xae
 			}
 			
-			if (objA0.velocity.x > 0x60)
-			{
-				objA0.velocity.x = 0x60
-			}
+			UpdateMovementStraightSimple()
+			if (objA0.velocity.x > 0)
+				objA0.velocity.x = max(objA0.velocity.x - 0x18, 0)
+			else if (objA0.velocity.x < 0)
+				objA0.velocity.x = min(objA0.velocity.x + 0x18, 0)
 			
 			fn0847e6()
+			if (abs(objA0.velocity.x) < 0x40)
+				objA0.velocity.x = -objA0.velocity.y
 			
+			objA0.position.y += 0x00000800
 			
-			if (objA0.position.x.u16 < camera.position.x.u16 - 0x60)
+			if (objA0.position.y.u16 > camera.position.y.u16 + getScreenHeight() + 0x10)
 			{
 				objA0.value3b = 3
 				objA0.countdown_value = 0x100
+				objA0.position.y.u16 += 0x40 // offset him just briefly
 				playSound(SFX_DROWN)
 			}
 		}
