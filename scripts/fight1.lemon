@@ -276,6 +276,7 @@ function void fn06438a()
 				objA0.countdown_value = 0x100
 				objA0.position.y.u16 += 0x40 // offset him just briefly
 				playSound(SFX_DROWN)
+				EarlyEnding.SpawnDrowningBubbles()
 			}
 		}
 		else if (objA0.value3b == 3)
@@ -306,4 +307,59 @@ function void fn06438a()
 	}
 	
 	base.fn06438a()
+}
+
+function void EarlyEnding.SpawnDrowningBubbles()
+{
+	for (u8 i = 0; i < 8; ++i)
+	{
+		if (allocDynamicObjectStd())
+		{
+			objA1.update_address = 0x018182
+			objA1.position.x.u16 = objA0.position.x.u16 + System.randRange(-16, 16)
+			objA1.position.y.u16 = objA0.position.y.u16 + 0x10 + System.randRange(-16, 16)
+			objA1.subtype2c = 0x02
+			u8[A1 + 0x26] = getRandomNumber()
+		}
+	}
+}
+
+//# address-hook(0x018182)
+function void EarlyEnd.UpdateDrowningBubble()
+{
+	if (objA0.base_state == 0)
+	{
+		objA0.base_state += 2
+		objA0.mapping_offset = 0x02fce0
+		objA0.sprite_attributes = 0x045c | sprite_attribute.PRIORITY
+		objA0.render_flags = (render_flag.WORLD | render_flag.VISIBLE)
+		objA0.box_size.x = 0x10
+		objA0.box_size.y = 0x10
+		objA0.sprite_priority = 0x80
+		
+		objA0.state = objA0.subtype2c
+		u16[A0 + 0x34] = objA0.position.x.u16
+		objA0.velocity.y = -0x100
+	}
+
+	if (objA0.position.y.u16 <= water.height.current)
+	{
+		UnloadObject()
+		return
+	}
+	else
+	{
+		if (level.HCZ_water_current_flags.both != 0)
+		{
+			u16[A0 + 0x34] += 4
+		}
+
+		D0.u16 = objA0.value26 & 0x7f
+		objA0.position.x.u16 = u16[A0 + 0x34] + s8[0x01831e + D0.u16]
+		++objA0.value26
+
+		fn0182d2()
+		UpdateMovementStraightSimple()
+		DrawObject()
+	}
 }
