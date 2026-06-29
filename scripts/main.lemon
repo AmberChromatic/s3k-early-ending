@@ -1,4 +1,4 @@
-//include debug
+include debug
 include saving
 include aiz
 include hcz
@@ -12,6 +12,7 @@ include dez_cutscene
 include outro
 include clear
 include fight1
+include secret1/?
 
 global u8 earlyend.state
 
@@ -44,8 +45,8 @@ function u64 Standalone.getModdedSoundKey(u64 soundKey, u8 sfxId, u8 soundRegTyp
 	{
 		if (earlyend.state >= EARLYEND_MGZCLEAR)
 			return "mus_k"
-		else if (earlyend.state >= EARLYEND_CNZCLEAR)
-			return "mus_k_alt"
+		else if (earlyend.state == EARLYEND_HCZCLEAR)
+			return "mus_rx"
 	}
 
 	return base.Standalone.getModdedSoundKey(soundKey, sfxId, soundRegType)

@@ -1,0 +1,13 @@
+{
+	"rouxls_rival_0x00":  { "File": "rouxls.png", "Rect": "0,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x01":  { "File": "rouxls.png", "Rect": "48,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x02":  { "File": "rouxls.png", "Rect": "96,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x03":  { "File": "rouxls.png", "Rect": "144,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x04":  { "File": "rouxls.png", "Rect": "192,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x05":  { "File": "rouxls.png", "Rect": "240,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x06":  { "File": "rouxls.png", "Rect": "288,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x07":  { "File": "rouxls.png", "Rect": "336,0,47,57", "Center": "24,29" },
+	"rouxls_rival_0x08":  { "File": "rouxls.png", "Rect": "384,0,47,57", "Center": "24,29" },
+	"rouxls_rival_beam":  { "File": "rouxls.png", "Rect": "0,64,16,2", "Center": "8,1" },
+	
+}

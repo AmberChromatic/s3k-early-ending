@@ -1,0 +1,521 @@
+function void RouxlsRival.playTextSound()
+{
+	u8 sound = System.randRange(0, 2)
+	string soundKey
+	if (sound == 0)
+	{
+		soundKey = "txt_rouxls1"
+	}
+	else if (sound == 1)
+	{
+		soundKey = "txt_rouxls2"
+	}
+	else
+	{
+		soundKey = "txt_rouxls3"
+	}
+	
+	Audio.playAudio(soundKey, 1)
+}
+
+//# address-hook(0x0622b2) end(0x0622ca)
+function void fn0622b2()
+{
+	base.fn0622b2()
+	
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		if (player1.control_override == 0xff)
+		{
+			if (global.level_started > -0x6f)
+				global.level_started -= 0x10
+			else
+				global.level_started = -0x7f
+		}
+	}
+}
+
+// init
+//# address-hook(0x0622e4) end(0x06232c)
+function void fn0622e4()
+{
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		rouxls_encounter.state = 0
+		rouxls_dialogue.state = 0
+		rouxls_dialogue.draw = false
+		
+		rouxls_dialogue.progress = 0
+		rouxls_dialogue.timer = 0
+		rouxls_encounter.disable_palettes = false
+		
+		if (getNumPlayers() == 1)
+			rouxls_dialogue.full = "Geh ha ha ha ha!\nThou FOOL!"
+		else if (getNumPlayers() > 1)
+			rouxls_dialogue.full = "Geh ha ha ha ha!\nThoust FOOLS!"
+		else
+			rouxls_dialogue.full = "Geh ha ha ha ha!\nThoust... Fools?"
+
+		base.fn0622e4()
+		objA0.position.x.u16 += 0x0c
+		objA0.position.y.u16 -= 0x08
+		objA0.value42 = objA0.position.y.u16
+		
+		objA0.position.y.u16 -= 0x10
+		
+		objA0.value3a = 0
+		objA0.animation.frame = 0
+		objA0.animation.timer = 0
+		objA0.countdown_value = 0x40
+		
+		player1.control_override = 0xff
+		player2.control_override = 0xff
+		control.player1 = 0x0808		// CONTROL_RIGHT, CONTROL_RIGHT
+		control.player2 = 0x0808		// CONTROL_RIGHT, CONTROL_RIGHT
+		control.tails = 0x0808		// CONTROL_RIGHT, CONTROL_RIGHT
+		
+		objA0.value26 = 0x00
+		return
+	}
+	
+	base.fn0622e4()
+}
+
+function void RouxlsRival.handleCNZIntroPlayers()
+{
+	u32 backupA1 = A1
+	A1 = 0xffffb000
+	if (objA1.flags2a & char.flag.PUSHING)
+	{
+		control.player1 = 0
+		objA1.flags2e = (control_flag.DISABLE_UPDATE | control_flag.DISABLE_ANIMATION)
+		RouxlsRival.resetPlayerState()
+	}
+	
+	A2 = A0
+	A0 = 0xffffb000
+	A1 = 0xffffb04a
+	if (objA1.position.x.u16 > char.position.x.u16 - 0x48)
+	{
+		control.player2 = 0
+		control.tails = 0
+		objA1.position.x.u16 = char.position.x.u16 - 0x48
+		objA1.velocity.x = 0
+		objA1.groundspeed = 0
+		objA1.flags2e = (control_flag.DISABLE_UPDATE | control_flag.DISABLE_ANIMATION)
+		RouxlsRival.resetPlayerState()
+	}
+	
+	A0 = A2	
+	A1 = backupA1
+}
+
+function void RouxlsRival.resetPlayerState()
+{
+	objA1.state = char.state.STANDING
+
+	D0 = u8[A1 + 0x38]
+#if STANDALONE
+	// Special treatment for Knuckles
+	if (D0 == CHARACTER_KNUCKLES)
+	{
+		objA1.animation.sprite = 0x56		// Knuckles' standing sprite
+		D0 = 0
+	}
+	else
+#endif
+	{
+		objA1.animation.sprite = u8[0x08d55c + D0.u16]		// Sonic/Tails' standing sprites
+	}
+
+	A3 = 0xffff0000 + u16[0x08d55e + D0.u16 * 2]
+	u8[A3] = 0
+	UpdatePlayer1SpritePatterns()
+}
+
+//# address-hook(0x062332) end(0x062338)
+function void fn062332()
+{
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+		RouxlsRival.handleCNZIntroPlayers()
+	
+	base.fn062332()
+}
+
+//# address-hook(0x062354) end(0x06235a)
+function void fn062354()
+{
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		if (objA0.update_address == 0x0622b2 && objA0.base_state == 0x04)
+		{
+			if (rouxls_dialogue.state == 0)
+			{
+				if (objA0.value3b == 0)
+				{
+					playMusic(MUSIC_KNUCKLES)
+					objA0.value3b = 1
+				}
+			
+				RouxlsRival.handleCNZIntroPlayers()
+				rouxls_encounter.disable_palettes = true
+				if (objA0.countdown_value >= 0)
+				{
+					palette_fade.offset = 0x20
+					palette_fade.count = 0x40
+					--objA0.countdown_value
+					if ((objA0.countdown_value % 16) == 1)
+					{
+						u32 backupA0 = A0
+						for (u8 k = 0; k < 2; ++k)
+						{
+							A0 = ((k == 0) ? 0xfffffc00 : 0xfffff080) + palette_fade.offset
+							for (u8 i = 0; i <= palette_fade.count; ++i)
+							{
+								FadeOutColor()
+							}
+						}
+						A0 = backupA0
+					}
+					return
+				}
+				
+				rouxls_dialogue.draw = true
+			
+				// intro dialouge
+				string currentText = substring(rouxls_dialogue.full, 0, rouxls_dialogue.progress)
+				if (strlen(currentText) < strlen(rouxls_dialogue.full))
+				{
+					if ((level.framecounter % 4) == 0)
+					{
+						rouxls_dialogue.progress += 1
+					}
+				}
+				else if (rouxls_dialogue.timer == 0)
+				{
+					rouxls_dialogue.timer = 120
+				}
+				else
+				{
+					--rouxls_dialogue.timer
+					if (rouxls_dialogue.timer <= 0)
+					{
+						rouxls_dialogue.state = 1
+						rouxls_dialogue.timer = 0
+						rouxls_dialogue.draw = false
+						playSound(SFX_SUPERTRANSFORM)
+					}
+				}
+			}
+			else if (rouxls_dialogue.state == 1)
+			{
+				// beam appear
+				objA0.value3a += 15
+				if (objA0.value3a == 255)
+				{
+					rouxls_dialogue.state = 2
+					rouxls_encounter.state = 1
+				}
+			}
+			else if (rouxls_dialogue.state == 2)
+			{
+				if (objA0.position.y.u16 < objA0.value42)
+					objA0.position.y += 0x00008000
+				else
+					objA0.position.y.u16 = objA0.value42
+			
+				// rouxls appear
+				if (objA0.animation.frame < 8)
+				{
+					++objA0.animation.timer
+					if (objA0.animation.timer > 6)
+					{
+						++objA0.animation.frame
+						objA0.animation.timer = 0
+					}
+				}
+				else
+				{
+					rouxls_dialogue.state = 3
+					playSound(0x9c)
+				}
+			}
+			else if (rouxls_dialogue.state == 3)
+			{
+				// beam disappear
+				objA0.value3a -= 5
+				if (objA0.value3a == 0)
+				{
+					rouxls_dialogue.state = 4
+					objA0.countdown_value = 0x28
+				}
+			}
+			else if (rouxls_dialogue.state == 4)
+			{
+				if (objA0.countdown_value >= 0)
+				{
+					palette_fade.offset = 0x00
+					palette_fade.count = 0x40
+					--objA0.countdown_value
+					if ((objA0.countdown_value % 4) == 1)
+					{
+						u32 backupA0 = A0
+						u8 numPalettes = (level.water_present != 0) ? 2 : 1
+						for (u8 k = 0; k < numPalettes; ++k)
+						{
+							A0 = ((k == 0) ? 0xfffffc00 : 0xfffff080) + palette_fade.offset
+							A1 = ((k == 0) ? 0xfffffc80 : 0xfffff000) + palette_fade.offset
+							for (u8 i = 0; i <= palette_fade.count; ++i)
+							{
+								FadeInColor()
+							}
+						}
+						A0 = backupA0
+					}
+					return
+				}
+				rouxls_dialogue.state = 5
+				rouxls_encounter.disable_palettes = false
+			}
+			
+			
+			if (rouxls_dialogue.state < 5)
+			{		
+				return
+			}
+		}
+	}
+	
+	base.fn062354()
+}
+
+
+//# address-hook(0x062360) end(0x062378)
+function void fn062360()
+{
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		objA0.base_state = 0x06
+		objA0.animation.frame = 8
+		return
+	}
+	
+	base.fn062360()
+}
+
+//# address-hook(0x06237c) end(0x0623d6)
+function void fn06237c()
+{
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		D2.u16 = camera.position.x.u16 + getScreenWidth() - 0x20
+
+		UpdateMovementStraightSimple()
+		D0 = D2.u16
+		D0.u16 -= objA0.position.x.u16
+		if (D0.u16 != 0)
+		{
+			D1.u8 = (D0.s16 < 0) ? 0xff : 0x00
+			D0.u16 = abs(D0.s16)
+
+			D0.u16 = (D0 << 16) / 0x2000
+			if (D1.u8 != 0)
+			{
+				D0.s16 = -D0.s16
+			}
+		}
+
+		objA0.velocity.x = D0.s16 * 2
+
+		if (objA0.position.x.u16 >= D2.u16 - 0x08 && rouxls_encounter.state == 1)
+		{
+			rouxls_encounter.state = 2
+			
+			rouxls_dialogue.full = "Geh ha ha ha ha!        \nPress thine..."
+			rouxls_dialogue.draw = true
+			rouxls_dialogue.progress = 0
+		}
+		
+		if (rouxls_encounter.state >= 2 && rouxls_encounter.state <= 8)
+		{
+			// dialouge
+			string currentText = substring(rouxls_dialogue.full, 0, rouxls_dialogue.progress)
+			if (strlen(currentText) < strlen(rouxls_dialogue.full))
+			{
+				if ((level.framecounter % 4) == 0)
+				{
+					if (rouxls_dialogue.full.getCharacter(rouxls_dialogue.progress) != 0x20)
+						RouxlsRival.playTextSound()
+					
+					rouxls_dialogue.progress += 1
+				}
+			}
+			else if (rouxls_dialogue.timer == 0)
+			{
+				rouxls_dialogue.timer = 120
+			}
+			else
+			{
+				--rouxls_dialogue.timer
+				if (rouxls_dialogue.timer <= 0)
+				{
+					if (rouxls_encounter.state == 2)
+					{
+						rouxls_dialogue.full = "Okay, waiteth."
+						rouxls_encounter.state = 3
+						rouxls_dialogue.progress = 0
+						
+						player1.control_override = 0
+						//player2.control_override = 0
+						A1 = 0xffffb000
+						objA1.flags2e = 0
+						A1 = 0xffffb04a
+						objA1.flags2e = 0
+						
+						rouxls_dialogue.timer = 120
+					}
+					else if (rouxls_encounter.state == 3)
+					{
+						rouxls_dialogue.full = "Um... Guyse??"
+						rouxls_encounter.state = 4
+						rouxls_dialogue.progress = 0
+						
+						rouxls_dialogue.timer = 120
+					}
+					else if (rouxls_encounter.state == 4)
+					{
+						rouxls_dialogue.full = "Am Thine in the\nIncorrecte mod????"
+						rouxls_encounter.state = 5
+						rouxls_dialogue.progress = 0
+						
+						rouxls_dialogue.timer = 240
+					}
+					else if (rouxls_encounter.state == 5)
+					{
+						rouxls_dialogue.full = "And wasnst thereth\nanother Guye?"
+						rouxls_encounter.state = 6
+						rouxls_dialogue.progress = 0
+					}
+					else if (rouxls_encounter.state == 6)
+					{
+						rouxls_encounter.state = 6
+					}
+				}
+			}
+		}
+		else if (rouxls_encounter.state == 16)
+		{
+			objA0.base_state = 0x0a
+			objA0.countdown_value = 0xa0
+			rouxls_encounter.state = 1
+			
+		}
+		return
+	}
+	base.fn06237c()
+}
+
+//# address-hook(0x0623fe) end(0x06241c)
+function void fn0623fe()
+{
+	if (earlyend.state == EARLYEND_HCZCLEAR)
+	{
+		if (objA0.update_address == 0x0622b2)
+		{
+			// dialogue
+			if (rouxls_encounter.state == 1)
+			{
+				if (objA0.countdown_value < 0)
+				{
+					rouxls_encounter.state = 2
+					objA0.countdown_value = 0xa0
+					rouxls_dialogue.full = "Um..."
+					rouxls_dialogue.progress = 0
+					rouxls_dialogue.timer = 120
+					
+					A1 = 0xffffb000
+					objA1.flags2a &= ~char.flag.FACING_LEFT
+				}
+				else
+				{
+					--objA0.countdown_value
+					return
+				}
+			}
+			
+			string currentText = substring(rouxls_dialogue.full, 0, rouxls_dialogue.progress)
+			if (strlen(currentText) < strlen(rouxls_dialogue.full))
+			{
+				
+				if ((level.framecounter % 2) == 0)
+				{
+					rouxls_dialogue.progress += 1
+				}
+			}
+			else
+			{
+				if (rouxls_dialogue.timer <= 0)
+				{
+					if (rouxls_encounter.state == 2)
+					{
+						rouxls_dialogue.full = "I thinketh I shall Go...\nPOSTHASTE!!"
+						rouxls_encounter.state = 3
+						rouxls_dialogue.progress = 0
+						rouxls_dialogue.timer = 120
+					}
+					else if (rouxls_encounter.state == 3)
+					{
+						if (objA0.countdown_value < 0)
+						{
+							objA0.position.x.u16 += 4
+							
+							if (rouxls_dialogue.draw)
+							{
+								rouxls_dialogue.draw = false
+								playSound(0x60)
+							}
+						}
+						else
+						{
+							--objA0.countdown_value
+						}
+					}
+				}
+				else
+				{
+					--rouxls_dialogue.timer
+				}
+			}
+			
+			if (objA0.render_flags & render_flag.VISIBLE)
+				return
+
+			// "spawnChildObjects(0x066568)" replaced by:
+			spawnChildObject(0x084aa4, 0x00, 0, 0)		// Screen mover for the upper border
+			spawnChildObject(0x084a76, 0x02, 0, 0)		// Screen mover for the left border
+			spawnChildObject(0x084a48, 0x04, 0, 0)		// Screen mover for the right border
+
+			move_area.bottom.target = screenmover_target.bottom
+			fn062422()
+			
+			player1.control_override = 0
+			player2.control_override = 0
+			
+			EarlyEnd.UpdateRouteProgression(EARLYEND_NOCLEAR)
+			rouxls_encounter.state = 0
+			rouxls_dialogue.state = 0
+			rouxls_encounter.disable_palettes = false
+			rouxls_dialogue.full = ""
+			rouxls_dialogue.progress = 0
+			rouxls_dialogue.timer = 0
+			rouxls_dialogue.draw = false
+		}
+		else
+		{
+			base.fn0623fe()
+		}
+		return
+	}
+	
+	base.fn0623fe()
+}

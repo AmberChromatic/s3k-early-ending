@@ -23,6 +23,7 @@ function void Debugging.debugDraw()
 	}
 	if (Key5)
 	{
+		
 		if (!key5_state)
 		{
 			if (earlyend.state < EARLYEND_GAMECLEAR)
