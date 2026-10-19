@@ -1,7 +1,7 @@
 // TO-DO //
 -fix any remaining compat bugs
 -ess compat?
--fix sonic 2 slope glitch from standing on button
+-fix sonic 2 slope glitch from standing on button (did we fix this already...? i forgor)
 -factor in jumping over invisible wall in rouxls secret
 
 
