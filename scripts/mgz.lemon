@@ -31,7 +31,7 @@ function void fn06c3ec()
 	if (earlyend.state == EARLYEND_HCZCLEAR)
 	{
 		// move down a little more to get 8 hits in...
-		objA0.countdown_value += 0x30
+		objA0.countdown_value += 0x40
 	}
 }
 
@@ -43,7 +43,7 @@ function void fn06c422()
 	if (earlyend.state == EARLYEND_HCZCLEAR)
 	{
 		// give a little more time to get 8 hits in...
-		objA0.countdown_value += 0x40
+		objA0.countdown_value += 0x80
 	}
 }
 
