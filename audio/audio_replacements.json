@@ -1,13 +1,13 @@
 {
 	// MUSIC
-	"mus_k": { "File": "k.ogg", "Type": "Music", "LoopStart": "2694141", "Name": "k.ogg"},
-	"mus_k_alt": { "File": "k_alt.ogg", "Type": "Music", "LoopStart": "2694141", "Name": "k_alt.ogg"},
-	"snd_k": { "File": "k2.ogg", "Type": "Sound", "Channel": "68", "Name": "k2.ogg"},
-	"snd_e": { "File": "e.ogg", "Type": "Sound", "Channel": "BD"},
+	"mus_k": { "File": "k.ogg", "Type": "Music", "LoopStart": "2694141", "Name": "k.ogg", "Volume": "0.9"},
+	"mus_k_alt": { "File": "k_alt.ogg", "Type": "Music", "LoopStart": "2694141", "Name": "k_alt.ogg", "Volume": "0.9"},
+	"snd_k": { "File": "k2.ogg", "Type": "Sound", "Channel": "68", "Name": "k2.ogg", "Volume": "0.9"},
+	"snd_e": { "File": "e.ogg", "Type": "Sound", "Channel": "BD", "Volume": "0.9"},
 	
 	// SECRET 1
-	"mus_rx": { "File": "secret1/rx.ogg", "Type": "Music", "LoopStart": "769793", "Name": "What thou Thinketh I shall Nameth mine Awesome Mixetape??"},
-	"txt_rouxls1": { "File": "secret1/voice/rouxls1.ogg", "Type": "Sound", "Channel": "A0"},
-	"txt_rouxls2": { "File": "secret1/voice/rouxls2.ogg", "Type": "Sound", "Channel": "A0"},
-	"txt_rouxls3": { "File": "secret1/voice/rouxls3.ogg", "Type": "Sound", "Channel": "A0"},
+	"mus_rx": { "File": "secret1/rx.ogg", "Type": "Music", "LoopStart": "769793", "Name": "What thou Thinketh I shall Nameth mine Awesome Mixetape??", "Volume": "0.9"},
+	"txt_rouxls1": { "File": "secret1/voice/rouxls1.ogg", "Type": "Sound", "Channel": "A0", "Volume": "0.8"},
+	"txt_rouxls2": { "File": "secret1/voice/rouxls2.ogg", "Type": "Sound", "Channel": "A0", "Volume": "0.8"},
+	"txt_rouxls3": { "File": "secret1/voice/rouxls3.ogg", "Type": "Sound", "Channel": "A0", "Volume": "0.8"},
 }
