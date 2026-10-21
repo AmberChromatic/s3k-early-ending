@@ -3,7 +3,7 @@ function void fn06229e()
 {
 	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
-		// gone for good. you can't fix what you broke now.
+		// gone for good. remove knuckles
 		UnloadObject()
 		return
 	}
@@ -19,7 +19,7 @@ function void fn0624de()
 {
 	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
-		// still gone for good. never coming back.
+		// still gone for good. allow player to teleport to icz
 		move_area.right = 0x49a0 + getScreenExtend()
 		level.results_done = 0
 		

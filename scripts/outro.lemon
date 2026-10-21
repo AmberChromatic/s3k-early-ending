@@ -4,9 +4,7 @@ function void fn05fe82()
 	base.fn05fe82()
 	
 	if (earlyend.state == EARLYEND_CNZCLEAR)
-	{
 		outro.ending_type = -2
-	}
 }
 
 //# address-hook(0x05b1f4) end(0x05b202)
@@ -15,10 +13,7 @@ function void fn05b1f4()
 	base.fn05b1f4()
 	
 	if (earlyend.state == EARLYEND_CNZCLEAR)
-	{
-		//debugLog(1)
 		outro.wait_time = 0
-	}
 }
 
 //# address-hook(0x05b204) end(0x05b282)
@@ -50,9 +45,7 @@ function void fn05f566()
 function void fn05f2f8()
 {
 	if (earlyend.state == EARLYEND_CNZCLEAR)
-	{
 		return
-	}
 
 	base.fn05f2f8()
 }
@@ -108,7 +101,6 @@ function void fn05abc0()
 			u16[0xffffeec0] = 0x24
 			fn05adc0()
 		}
-		
 		return
 	}
 	

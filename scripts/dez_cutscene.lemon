@@ -6,7 +6,6 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 		if (level.trigger00 == 12)
 		{
 			++objA0.countdown_value
-			//debugLog(1)
 			
 			if (objA0.countdown_value > 0x80)
 			{
@@ -81,7 +80,6 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 			}
 		}
 		
-		
 		if (global.level_started > -0x6f)
 			global.level_started -= 0x10
 		else
@@ -96,9 +94,6 @@ function void EarlyEnding.UpdateDEZSonicDizzy()
 //# address-hook(0x074262) end(0x074276)
 function void fn074262()
 {
-	//debugLog(objA0.base_state)
-	//debugLog(objA0.countdown_value)
-	
 	if (level.trigger00 == 1)
 	{
 		fn074fd2()
@@ -210,7 +205,6 @@ function void fn074262()
 			playSound(0x93)
 			u8[A0 + 0x30] = 0
 		}
-		
 		return
 	}
 	else if (level.trigger00 == 11)
@@ -252,7 +246,6 @@ function void fn074262()
 			
 			A1 = 0xffffb04a
 			objA1.state = char.state.TAILS_TRANSFORM
-			
 			playSound(0x4e)
 		}
 		
@@ -448,7 +441,6 @@ function void fn074c8c()
 	#endif
 
 		fn074ccc()
-		
 		return
 	}
 	
@@ -480,7 +472,6 @@ function void fn074ccc()
 			objA0.countdown_value = 0x40
 			fn074d04()
 		}
-		
 		return
 	}
 	
@@ -538,7 +529,6 @@ function void EarlyEnd.FadeColorToGreen()
 #endif
 	if (color != 0x0eee)
 	{
-		
 		if ((color & 0x00e0) < 0x00e0)
 		{
 			color += 0x0020
@@ -547,12 +537,10 @@ function void EarlyEnd.FadeColorToGreen()
 		{
 			color += 0x0200
 		}
-		
 		if ((color & 0x000e) > 0x0000)
 		{
 			color -= 0x0200
 		}
-
 		
 		u16[A1] = color
 	}

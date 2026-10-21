@@ -3,6 +3,7 @@ function void fn071bce()
 {
 	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
+		// sorry nothing
 		A1 = 0x071bbe
 		if (InitBoss(0x071bd8))
 			return

@@ -1,5 +1,3 @@
-// TO-DO: account for a level restart after hcz check is passed
-
 //# address-hook(0x062112) end(0x06211e)
 function void fn062112()
 {
@@ -29,40 +27,41 @@ function void fn021818()
 		objA0.value32 = u16[0xffffb04a + 0x18]
 	
 		A1 = 0xffffb000
-			bool canBreakWall = false
-			if (super.active || u8[A1 + 0x38] == CHARACTER_KNUCKLES)
+		D1.u16 = u16[A0 + 0x30]
+		bool canBreakWall = false
+		if (super.active || u8[A1 + 0x38] == CHARACTER_KNUCKLES)
+		{
+			// Super/Hyper forms can break walls, and Knuckles can
+			canBreakWall = true
+		}
+		else
+		{
+			// Does this wall allow for rolling into the wall? Otherwise the fire shield will do
+			if ((objA0.flags2a & object.flag.P1_PUSHING) || (u8[A1 + 0x2b] & char.bonus.SHIELD_FIRE))
 			{
-				// Super/Hyper forms can break walls, and Knuckles can
-				canBreakWall = true
+				canBreakWall = (objA1.state == char.state.ROLLING && abs(D1.s16) >= 0x0480)
 			}
-			else
+		}
+
+		if (canBreakWall)
+		{
+			global.level_flag02 = 2
+		
+			objA0.flags2a &= ~object.flag.P1_PUSHING
+			fn02165a()
+
+			A1 = 0xffffb04a
+			if ((objA0.flags2a & object.flag.P2_PUSHING) && objA1.state == char.state.ROLLING)
 			{
-				// Does this wall allow for rolling into the wall? Otherwise the fire shield will do
-				if ((objA0.flags2a & object.flag.P1_PUSHING))
-				{
-					canBreakWall = true
-				}
+				objA0.flags2a &= ~object.flag.P2_PUSHING
+				objA1.velocity.x = objA0.value32
+				objA1.groundspeed = objA1.velocity.x
+				objA1.flags2a &= ~char.flag.PUSHING
 			}
 
-			if (canBreakWall)
-			{
-				global.level_flag02 = 2
-			
-				objA0.flags2a &= ~object.flag.P1_PUSHING
-				fn02165a()
-
-				A1 = 0xffffb04a
-				if ((objA0.flags2a & object.flag.P2_PUSHING) && objA1.state == char.state.ROLLING)
-				{
-					objA0.flags2a &= ~object.flag.P2_PUSHING
-					objA1.velocity.x = objA0.value32
-					objA1.groundspeed = objA1.velocity.x
-					objA1.flags2a &= ~char.flag.PUSHING
-				}
-
-				DrawOrUnloadObject()
-				return
-			}
+			DrawOrUnloadObject()
+			return
+		}
 	}
 	
 	base.fn021818()

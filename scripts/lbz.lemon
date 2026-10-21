@@ -1,7 +1,7 @@
 //# address-hook(0x062640) end(0x062662)
 function void fn062640()
 {
-	// lbz1
+	// lbz 1
 	if (earlyend.state == EARLYEND_CNZCLEAR && camera.position.x.u16 < 0x3c21)
 	{
 		// it's too late.
@@ -158,7 +158,8 @@ function void fn08cce8()
 		spawnChildObject(0x068062, 0x00, 30, 0)		// Egg Mobile exhaust flame
 		return
 	}
-		base.fn08cce8()
+	
+	base.fn08cce8()
 }
 
 //# address-hook(0x08ccb4) end(0x08cce6)

@@ -1,10 +1,10 @@
 // TO-DO //
--fix any remaining compat bugs
--ess compat?
--fix sonic 2 slope glitch from standing on button (did we fix this already...? i forgor)
--factor in jumping over invisible wall in rouxls secret
-
+-ess compat? (no)
 
 
 // DONE //
 -disable any ecf characters (and tails alone) from triggering the route
+-fix sonic 2 slope glitch from standing on button (might have been fixed already)
+-factor in jumping over invisible wall in rouxls secret
+-disable level timer for rouxls variant
+-fix any remaining compat bugs

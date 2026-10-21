@@ -9,8 +9,6 @@ function void fn065c56()
 
 	// "spawnSimpleChildObjects(0x084b12)" replaced by:
 	spawnSimpleChildObjects(0x084ad2, 1)		// Screen mover for the lower border
-	
-	
 }
 
 //# address-hook(0x02b452) end(0x02b492)

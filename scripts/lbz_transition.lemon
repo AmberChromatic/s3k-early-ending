@@ -182,43 +182,17 @@ function void fn072cc6()
 	{
 		if (objA0.base_state == 0x00)
 		{
-			++u16[A0 + 0x48]
-			// Sky palette fade steps
-			if (u16[A0 + 0x48] == 48)
+			if (EarlyEnding.FadeSky())
 			{
-				u16[0xfffffc00 + 0x3b * 2] = 0x0cac
-				u16[0xfffffc00 + 0x3c * 2] = 0x0c68
-				u16[0xfffffc00 + 0x3d * 2] = 0x0c46
-				u16[0xfffffc00 + 0x3e * 2] = 0x0a44
+				setupObjectAttributesFull(0x08d562)
+				requestLoadingPatterns(0x77)		// Robotnik running + ship and boss explosion sprites
+				objA0.base_state = 0x02
+				u8[A0 + 0x38] = 0x10 // remove the robotnik head
+				objA0.position.x.u16 = camera.position.x.u16 + getScreenCenterX() + 0x40
+				objA0.position.y.u16 = camera.position.y.u16 - 0x20
+				fn0685e2()
+				objA0.render_flags &= ~render_flag.FLIP_X
 			}
-			else if (u16[A0 + 0x48] == 96)
-			{
-				u16[0xfffffc00 + 0x3b * 2] = 0x0a88
-				u16[0xfffffc00 + 0x3c * 2] = 0x0a46
-				u16[0xfffffc00 + 0x3d * 2] = 0x0824
-				u16[0xfffffc00 + 0x3e * 2] = 0x0622
-			}
-			else if (u16[A0 + 0x48] == 144)
-			{
-				u16[0xfffffc00 + 0x3b * 2] = 0x0844
-				u16[0xfffffc00 + 0x3c * 2] = 0x0622
-				u16[0xfffffc00 + 0x3d * 2] = 0x0400
-				u16[0xfffffc00 + 0x3e * 2] = 0x0200
-			}
-			
-			if (u16[A0 + 0x48] < 260)
-			{
-				return
-			}
-		
-			setupObjectAttributesFull(0x08d562)
-			requestLoadingPatterns(0x77)		// Robotnik running + ship and boss explosion sprites
-			objA0.base_state = 0x02
-			u8[A0 + 0x38] = 0x10 // remove the robotnik head
-			objA0.position.x.u16 = camera.position.x.u16 + getScreenCenterX() + 0x40
-			objA0.position.y.u16 = camera.position.y.u16 - 0x20
-			fn0685e2()
-			objA0.render_flags &= ~render_flag.FLIP_X
 		}
 		else if (objA0.base_state == 0x02)
 		{
@@ -241,7 +215,6 @@ function void fn072cc6()
 				control.player1 = (0x0808 | 0x2020)
 				A1 = 0xffffb000
 				u8[A1 + 0x2f] = 1
-				
 			}
 			
 			if ((level.framecounter.low & 0x0f) == 0)
@@ -398,4 +371,38 @@ function void fn072cc6()
 	}
 	
 	base.fn072cc6()
+}
+
+function bool EarlyEnding.FadeSky()
+{
+	// function that can be overridden for mod compat
+	if (u16[A0 + 0x48] >= 260)
+	{
+		return true
+	}
+	
+	++u16[A0 + 0x48]
+	// Sky palette fade steps
+	if (u16[A0 + 0x48] == 48)
+	{
+		u16[0xfffffc00 + 0x3b * 2] = 0x0cac
+		u16[0xfffffc00 + 0x3c * 2] = 0x0c68
+		u16[0xfffffc00 + 0x3d * 2] = 0x0c46
+		u16[0xfffffc00 + 0x3e * 2] = 0x0a44
+	}
+	else if (u16[A0 + 0x48] == 96)
+	{
+		u16[0xfffffc00 + 0x3b * 2] = 0x0a88
+		u16[0xfffffc00 + 0x3c * 2] = 0x0a46
+		u16[0xfffffc00 + 0x3d * 2] = 0x0824
+		u16[0xfffffc00 + 0x3e * 2] = 0x0622
+	}
+	else if (u16[A0 + 0x48] == 144)
+	{
+		u16[0xfffffc00 + 0x3b * 2] = 0x0844
+		u16[0xfffffc00 + 0x3c * 2] = 0x0622
+		u16[0xfffffc00 + 0x3d * 2] = 0x0400
+		u16[0xfffffc00 + 0x3e * 2] = 0x0200
+	}
+	return false
 }

@@ -44,7 +44,6 @@ function void fn063de0()
 {	
 	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 	{
-		//debugLog(objA0.base_state)
 		A1 = 0xffffb000
 		if (u8[A1 + 0x37] != 0) // protection flag check
 		{
