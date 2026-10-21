@@ -5,27 +5,8 @@
 		"UniqueID": "amberchromatic-s3k-early-ending",
 		"Author": "AmberChromatic, StarrydustNova, BriceTAS",
 		"Description": "Drown Knuckles.",
-		"URL": "no lol\n\n\nokay a release is being worked on\nplease give us some time to polish it up\nalso there will be some mod compat",
 		"ModVersion": "1.0.0",
 		"GameVersion": "26.03.28.0"
-	},
-	"Settings":
-	{
-		"List":
-		[
-			{
-				"InternalName": "Screen Width",
-				"DisplayName": "Screen Width",
-				"Variable": "ClassicModeSampleMode.screenWidth",	// This must be the name of a global variable in the scripts (not a define!)
-				"DefaultValue": "320",
-				"Options":
-				{
-					"320": "320 pixels (classic 4:3)",
-					"360": "360 pixels (16:10)",
-					"400": "400 pixels (16:9)"
-				}
-			}
-		]
 	},
 	
 	"OtherMods":

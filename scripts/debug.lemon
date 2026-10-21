@@ -3,7 +3,6 @@ global bool key5_state
 function void Init()
 {
 	playMusic(level.default_music)
-	
 	global.chaos_emeralds = 7
 	
 	base.Init()
@@ -19,13 +18,14 @@ function void Debugging.debugDraw()
 		"MGZ CLEAR",
 		"CNZ CLEAR",
 		"GAME CLEAR",
+		"UMM...",
 	}
 	if (Key5)
 	{
 		
 		if (!key5_state)
 		{
-			if (earlyend.state < EARLYEND_GAMECLEAR)
+			if (earlyend.state < EARLYEND_MINEAWESOMETHCONSTANT)
 			{
 				++earlyend.state
 			}

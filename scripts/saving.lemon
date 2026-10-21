@@ -42,7 +42,7 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 
 	earlyend.state = progress
 	
-	if (progress != EARLYEND_NOCLEAR)
+	if (progress < EARLYEND_NOCLEAR)
 	{
 		Audio.playAudio("snd_k", 1)
 		
@@ -50,6 +50,10 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 		{
 			EarlyEnd.K()
 		}
+	}
+	else if (progress == EARLYEND_MINEAWESOMETHCONSTANT)
+	{
+		playSound(0x7b)
 	}
 	else
 	{

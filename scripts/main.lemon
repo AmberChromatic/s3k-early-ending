@@ -26,6 +26,7 @@ constant u8 EARLYEND_HCZCLEAR = 2
 constant u8 EARLYEND_MGZCLEAR = 3
 constant u8 EARLYEND_CNZCLEAR = 4
 constant u8 EARLYEND_GAMECLEAR = 5
+constant u8 EARLYEND_MINEAWESOMETHCONSTANT = 6 // of course its the gaster number
 
 #define EARLYENDING_ACTIVE
 
@@ -43,10 +44,10 @@ function u64 Standalone.getModdedSoundKey(u64 soundKey, u8 sfxId, u8 soundRegTyp
 	{
 		if (earlyend.state == EARLYEND_MGZCLEAR) // specifically for The fight
 			return "mus_k"
-		else if (earlyend.state >= EARLYEND_CNZCLEAR) // for after The fight
-			return "mus_k_alt"
-		else if (earlyend.state == EARLYEND_HCZCLEAR) // Um...
+		else if (earlyend.state == EARLYEND_MINEAWESOMETHCONSTANT) // Um...
 			return "mus_rx"
+		else // for after The fight
+			return "mus_k_alt"
 	}
 
 	return base.Standalone.getModdedSoundKey(soundKey, sfxId, soundRegType)
@@ -123,7 +124,7 @@ function bool Standalone.onWriteToSpriteTable(s16 px, s16 py, u16 renderQueue)
 //# address-hook(0x0067b6) end(0x0067ec)
 function void SetGlobalCharacters()
 {
-	if (earlyend.state >= EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		// enforce sonic & tails after mgz clear condition
 		levelselect.characters = 0

@@ -56,7 +56,7 @@ function void fn06c4be()
 	{
 		// missed chance, end route
 		u8[A0 + 0x46] = 0xff
-		EarlyEnd.UpdateRouteProgression(EARLYEND_NOCLEAR)
+		EarlyEnd.UpdateRouteProgression(EARLYEND_MINEAWESOMETHCONSTANT) // ???
 	}
 }
 
