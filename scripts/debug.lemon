@@ -2,7 +2,6 @@ global bool key5_state
 
 function void Init()
 {
-	earlyend.crashma = false
 	playMusic(level.default_music)
 	
 	global.chaos_emeralds = 7
