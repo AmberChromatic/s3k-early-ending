@@ -27,7 +27,6 @@ function void fn021818()
 		objA0.value32 = u16[0xffffb04a + 0x18]
 	
 		A1 = 0xffffb000
-		D1.u16 = u16[A0 + 0x30]
 		bool canBreakWall = false
 		if (super.active || u8[A1 + 0x38] == CHARACTER_KNUCKLES)
 		{
@@ -37,9 +36,9 @@ function void fn021818()
 		else
 		{
 			// Does this wall allow for rolling into the wall? Otherwise the fire shield will do
-			if ((objA0.flags2a & object.flag.P1_PUSHING) || (u8[A1 + 0x2b] & char.bonus.SHIELD_FIRE))
+			if ((objA0.flags2a & object.flag.P1_PUSHING))
 			{
-				canBreakWall = (objA1.state == char.state.ROLLING && abs(D1.s16) >= 0x0480)
+				canBreakWall = true
 			}
 		}
 
