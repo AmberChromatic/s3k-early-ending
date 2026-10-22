@@ -35,6 +35,7 @@ function void fn05f566()
 	{
 		// No going back now...
 		EarlyEnding.TriggerNoReturn()
+		Game.endSkippableCutscene()
 		
 		UnloadObject()
 		return
