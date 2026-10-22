@@ -25,8 +25,15 @@ function void fn021818()
 	{
 		u16[A0 + 0x30] = u16[0xffffb000 + 0x18]
 		objA0.value32 = u16[0xffffb04a + 0x18]
+
+		D1 = objA0.box_size.x + 11
+		D2 = objA0.box_size.y
+		D3.u16 = D2.u16 + 1
+		D4.u16 = objA0.position.x.u16
+		fn01dc56()
 	
 		A1 = 0xffffb000
+		D1.u16 = u16[A0 + 0x30]
 		bool canBreakWall = false
 		if (super.active || u8[A1 + 0x38] == CHARACTER_KNUCKLES)
 		{
@@ -36,11 +43,13 @@ function void fn021818()
 		else
 		{
 			// Does this wall allow for rolling into the wall? Otherwise the fire shield will do
-			if ((objA0.flags2a & object.flag.P1_PUSHING))
+			if ((objA0.flags2a & object.flag.P1_PUSHING) || (u8[A1 + 0x2b] & char.bonus.SHIELD_FIRE))
 			{
-				canBreakWall = true
+				canBreakWall = (objA1.state == char.state.ROLLING && abs(D1.s16) >= 0x0480)
 			}
 		}
+		
+		DrawOrUnloadObject()
 
 		if (canBreakWall)
 		{
@@ -57,10 +66,9 @@ function void fn021818()
 				objA1.groundspeed = objA1.velocity.x
 				objA1.flags2a &= ~char.flag.PUSHING
 			}
-
-			DrawOrUnloadObject()
 			return
 		}
+		return
 	}
 	
 	base.fn021818()
