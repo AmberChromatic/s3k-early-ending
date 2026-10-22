@@ -54,7 +54,7 @@ function void fn07fd68()
 			u8[A1 + 0x2e] = (control_flag.DISABLE_INTERACTION | control_flag.DISABLE_ANIMATION | control_flag.DISABLE_UPDATE)
 			
 			A1 = 0xffffb04a
-			objA1.position.x.u16 = camera.position.x.u16 + getScreenCenterX() - 0x30
+			objA1.position.x.u16 = camera.position.x.u16 + getScreenCenterX() - 0x30 + getScreenExtend()
 			objA1.position.y.u16 = camera.position.y.u16 + getScreenHeight() + 0x40
 			
 			++objA0.countdown_value
@@ -68,7 +68,7 @@ function void fn07fd68()
 			requestLoadingPatterns(0x77)		// Robotnik running + ship and boss explosion sprites
 			objA0.base_state = 0x02
 			u8[A0 + 0x38] = 0x10 // remove the robotnik head
-			objA0.position.x.u16 = camera.position.x.u16 + getScreenCenterX()
+			objA0.position.x.u16 = camera.position.x.u16 + getScreenCenterX() + getScreenExtend()
 			objA0.position.y.u16 = camera.position.y.u16 + getScreenHeight() + 0x20
 			fn0685e2()
 			objA0.render_flags = (render_flag.WORLD | render_flag.FLIP_X)
