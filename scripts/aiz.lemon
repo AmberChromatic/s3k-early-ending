@@ -89,24 +89,29 @@ function void fn0620e4()
 				control.player1 = 0x0101		// CONTROL_UP, CONTROL_UP
 				
 				player1.camera_lock = 0xff
-				
-				objA0.render_flags |= render_flag.FLIP_X
-				objA0.animation.sprite = 32
 			}
 		}
 		else if (objA0.value3b == 1)
 		{
 			// route trigger
-			objA0.render_flags |= render_flag.FLIP_X
+			objA0.render_flags &= ~render_flag.FLIP_X
 			
+			if (objA0.countdown_value < 52)
+			{
+				// chuckle like normal
+				Object.AnimationProgressByLocalA1()
+			}
+			
+			u8 cameras_inplace = 0
 			if (camera.position.x.u16 < 0x4a38)
 			{
 				camera.position.x.u16 += 4
 			}
 			
-			if (camera.position.x.u16 > 0x4a38)
+			if (camera.position.x.u16 >= 0x4a38)
 			{
 				camera.position.x.u16 = 0x4a38
+				cameras_inplace += 1
 			}
 			
 			if (camera.position.y.u16 > 0x015a)
@@ -114,22 +119,42 @@ function void fn0620e4()
 				camera.position.y.u16 -= 4
 			}
 			
-			if (camera.position.y.u16 < 0x015a)
+			if (camera.position.y.u16 <= 0x015a)
 			{
 				camera.position.y.u16 = 0x015a
+				cameras_inplace += 1
 			}
 			
-			++objA0.countdown_value
+			if (cameras_inplace >= 2)
+				++objA0.countdown_value
 			
-			if (objA0.countdown_value == 30)
+			if (objA0.countdown_value == 60)
 			{
-				objA0.animation.sprite = 33
-				
 				// progress route
 				EarlyEnd.UpdateRouteProgression(EARLYEND_AIZCLEAR)
 			}
-			if (objA0.countdown_value > 240)
+			
+			
+			if (objA0.countdown_value > 52 && objA0.countdown_value < 60)
 			{
+				// in between frame
+				objA0.animation.sprite = 22
+			}
+			else if (objA0.countdown_value >= 60 && objA0.countdown_value <= 262)
+			{
+				// shocked knuckles frame
+				objA0.render_flags |= render_flag.FLIP_X
+				objA0.animation.sprite = 33
+			}
+			if (objA0.countdown_value > 262)
+			{
+				// another inbetween
+				objA0.animation.sprite = 22
+			}
+			
+			if (objA0.countdown_value > 270)
+			{
+				// walks away
 				objA0.value3b = 2
 				objA0.animation.frame = 0
 				objA0.animation.timer = 0
@@ -139,6 +164,9 @@ function void fn0620e4()
 		else if (objA0.value3b == 2)
 		{
 			// walks away
+			CheckGroundCollision()
+			objA0.position.y.u16 += D1.u16
+			
 			objA0.render_flags &= ~render_flag.FLIP_X
 			objA0.position.x.u16 += 2
 			Object.animationProgress(0x06669f)		// Cutscene Knuckles walking animation

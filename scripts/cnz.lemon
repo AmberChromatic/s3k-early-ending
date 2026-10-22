@@ -29,6 +29,10 @@ function void fn0624de()
 			objA1.update_address = 0x0522a0
 		}
 		
+		// As there's no act results here, just update the save file when the level exit is spawned...
+		sram.block_interrupts.u8 = 0xff
+		SaveGameOnLevelFinished()
+		
 		UnloadObject()
 		return
 	}

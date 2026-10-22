@@ -14,14 +14,14 @@ function void fn062112()
 //# address-hook(0x021818) end(0x021936)
 function void fn021818()
 {
-	if (earlyend.state == EARLYEND_HCZCLEAR)
+	if (earlyend.state == EARLYEND_HCZCLEAR && global.zone_act.apparent == 0x0101)
 	{
 		// remove wall, condition has been cleared
 		UnloadObject()
 		return
 	}
 
-	if (earlyend.state == EARLYEND_AIZCLEAR && global.level_flag02 == 1)
+	if (earlyend.state == EARLYEND_AIZCLEAR && global.level_flag02 == 1 && global.zone_act.apparent == 0x0101)
 	{
 		u16[A0 + 0x30] = u16[0xffffb000 + 0x18]
 		objA0.value32 = u16[0xffffb04a + 0x18]

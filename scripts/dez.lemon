@@ -16,6 +16,18 @@ function void fn02d9a0()
 	base.fn02d9a0()
 }
 
+// dez boss floor that i hate (except it's not in teg v2 this time)
+//# address-hook(0x05a7c8) end(0x05a7e6)
+function void fn05a7c8()
+{
+	base.fn05a7c8()
+	
+	if (earlyend.state >= EARLYEND_CNZCLEAR)
+	{
+		objA0.position.x.u16 = 0x04bb + getScreenExtend() * 2
+	}
+}
+
 //# address-hook(0x07fd68) end(0x07fd82)
 function void fn07fd68()
 {
@@ -30,6 +42,12 @@ function void fn07fd68()
 			control.player1 = 0
 			control.player2 = 0
 			control.tails = 0
+			
+			camera.position.x.u16 = 0x0433 + (getScreenExtend() * 2)
+			camera.position.y.u16 = 0x0020
+			
+			// Enforce a full screen refresh of plane A to get rid of wrong tiles being shown
+			fillPlaneA_Default(camera.position.x.u16, camera.position.y.u16, getScreenWidth(), getScreenHeight())
 			
 			A1 = 0xffffb000
 			objA1.state = char.state.STANDING

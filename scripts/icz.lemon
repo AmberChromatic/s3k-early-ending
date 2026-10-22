@@ -11,6 +11,11 @@ function void fn071bce()
 		A1 = 0x071bc6
 		InitBossArea()
 		move_area.right = 0x4720
+		
+		// As there's no act results here, just update the save file when the boss area is reached...
+		sram.block_interrupts.u8 = 0xff
+		SaveGameOnLevelFinished()
+		
 		UnloadObject()
 		return
 	}

@@ -53,7 +53,7 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 	}
 	else if (progress == EARLYEND_MINEAWESOMETHCONSTANT)
 	{
-		playSound(0x7b)
+		playSound(0x75)
 	}
 	else
 	{
@@ -108,4 +108,16 @@ function void fn00d8c4()
 		
 		EarlyEnd.clearRouteProgressForSlot()
 	}
+}
+
+//# address-hook(0x00c434) end(0x00c4d0)
+function void SaveGameOnLevelFinished()
+{
+	if (earlyend.state == EARLYEND_CNZCLEAR && global.zone_act.apparent == 0x0601)
+	{
+		// ignore saving here entirely, remain at LBZ.
+		return
+	}
+
+	base.SaveGameOnLevelFinished()
 }

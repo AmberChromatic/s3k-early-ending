@@ -94,6 +94,8 @@ function void fn072b96()
 			playMusic(MUSIC_KNUCKLES)
 			level.default_music = MUSIC_KNUCKLES
 			
+			Game.startSkippableCutscene()
+			
 			stopCharacterWinPose(0xffffb000)
 			stopCharacterWinPose(0xffffb04a)
 			player1.control_override = 0xff

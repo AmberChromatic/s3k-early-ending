@@ -33,13 +33,47 @@ function void fn05f566()
 {
 	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
-		System.savePersistentData(0, 32, "fullgame", "end", true)
+		// No going back now...
+		EarlyEnding.TriggerNoReturn()
+		
 		UnloadObject()
 		return
 	}
 	
 	base.fn05f566()
 }
+
+function void EarlyEnding.TriggerNoReturn()
+{
+	System.savePersistentData(0, 32, "fullgame", "end", true)
+	EarlyEnd.clearRouteProgressForSlot() // clear progression for save slot
+
+	// Save game slot
+	if (global.lock_on_state == 0 && global.active_saveslot != 0)
+	{
+		A1 = global.active_saveslot
+		
+		u8[A1] = 4 // no emeralds ending
+		u8[A1 + 0x02] = 0x30 // set character to knuckles
+		u8[A1 + 0x03] = 0x0e // corrupted zone ID
+
+		u8[A1 + 0x08] = 1 // no lives
+		u8[A1 + 0x09] = 0 // no continues
+
+	#if STANDALONE
+		// Store additional data
+		u32 slotIndex = (A1 - 0xffffe6ac) / 0x0a
+		u32 address = 0x801100 + slotIndex * 0x20
+		u32[address] = player.score
+	#endif
+
+		sram.block_interrupts.u8 = 0xff
+		SaveGameSlot()
+	}
+
+	level.giantrings_clear = 0
+}
+
 
 //# address-hook(0x05f2f8) end(0x05f31a)
 function void fn05f2f8()
