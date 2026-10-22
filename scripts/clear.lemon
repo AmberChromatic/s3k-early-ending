@@ -219,69 +219,82 @@ function bool fn00d458()
 			}
 			level.giantrings_clear = 0
 		}
-		fn00da4e()
-
-		global.zone_act = D0.u16
-		global.zone_act.apparent = D0.u16
-		levelselect.characters  = (u8[A1 + 0x02] >> 4)
-		global.next_bluespheres = (u8[A1 + 0x02] & 0x0f)
-
-		D0 = u16[A1 + 0x06]
-		A2 = 0xffffffb2		// Start of emerald collection states
-		fn00da1e()
-		global.chaos_emeralds = D1.u8
-		global.super_emeralds = D2.u8
-	#if STANDALONE
-		global.game_random_base = u8[A1 + 0x01]
-		if (global.game_random_base == 0)
-		{
-			// Intentionally not using the (more deterministic) "getRandomNumber" here
-			global.game_random_base = 1 + (System.rand() % 0xff)		// Avoid the 0 value
-		}
-	#endif
-
-		global.active_saveslot = A1
-		DataSelect.SharedGameSlotContinue()
-
-		D0.u8 = u8[A1 + 0x08]
-		if ((D0.u8 == 0) || (D0.u8 < 3 && u8[A1 + 0x09] == 0))
-		{
-			u8[A1 + 0x08] = 3
-			if (u8[A1 + 0x09] > 0)
-				--u8[A1 + 0x09]
-		}
-
-		lives_counter = u8[A1 + 0x08]
-		continues_counter = u8[A1 + 0x09]
-
-	#if STANDALONE
-		if (continues_counter >= 5)
-		{
-			Game.setAchievementComplete(ACHIEVEMENT_CONTINUES)
-		}
-
-		// Load additional data
-		u32 slotIndex = (A1 - 0xffffe6ac) / 0x0a
-		u32 address = 0x801100 + slotIndex * 0x20
-		if (u8[A1] == 0)
-		{
-			// Load score, but only for non-completed games
-			player.score = u32[address]
-			player.next_life_score = (player.score / 5000 + 1) * 5000
-		}
-	#endif
-
-		sram.block_interrupts.u8 = 0xff
-		SaveGameSlot()
-
-		global.game_mode = 0x0c			// Main Game
-		DrawObject()
+		playSound(0xb2)
 		return 0
 	}
 	else
 	{
 		return base.fn00d458()
 	}
+}
+
+// no save
+//# address-hook(0x00d30c) end(0x00d39a)
+function void fn00d30c()
+{
+	if (EarlyEnd.getGameClear())
+	{
+		dataselect.nosave_characters = 3
+		objA0.compound.sprite1.animation.sprite = 0x0f
+		objA0.animation.sprite = dataselect.nosave_characters + 4
+
+		if (dataselect.slot_selected == 0 && u16[0xffffb04a + 0x2e] == 0 && u16[0xffffeee4] == 0)
+		{
+			if (control.pad1.pressed & DataSelect.CONTROLS_ACCEPT)
+			{
+				playSound(0xb2) // nope
+				return
+			}
+
+			if (control.pad1.pressed & CONTROL_UP || control.pad1.pressed & CONTROL_DOWN)
+			{
+				playSound(0xb2) // nope
+				return
+			}
+
+			objA0.animation.sprite = D0.u8 + 4
+			objA0.compound.count = 1
+			if (level.framecounter.low & 0x10)
+			{
+				fn00d69e()
+				return
+			}
+		}
+
+		objA0.compound.count = 0
+		fn00d69e()
+		return
+	}
+	
+	base.fn00d30c()
+}
+
+// eggman
+//# address-hook(0x00d7c0) end(0x00d7e6)
+function void fn00d7c0()
+{
+	if (EarlyEnd.getGameClear())
+	{
+		if (dataselect.slot_selected == 9)
+		{
+			if (control.pad1.pressed & DataSelect.CONTROLS_ACCEPT)
+			{
+				playSound(0xb2)
+				return
+			}
+		}
+
+		if (Input.buttonPressed(BUTTON_Y) && dataselect.slot_selected >= 1)
+		{
+			playSound(0xb2)
+			return
+		}
+
+		fn00d69e()
+		return
+	}
+	
+	base.fn00d7c0()
 }
 
 //# address-hook(0x00d42c) end(0x00d69a)
