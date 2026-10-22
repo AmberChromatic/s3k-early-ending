@@ -68,17 +68,15 @@ function void EarlyEnd.UpdateRouteProgression(u8 progress)
 
 function void EarlyEnd.K()
 {
-	return
-
-	debugDumpToFile("1_hello", 0, 0)
-	debugDumpToFile("2_can_anybody_hear_me", 0, 0)
-	debugDumpToFile("3_i_cant_feel_anything", 0, 0)
-	debugDumpToFile("4_i_cant_see_anything", 0, 0)
-	debugDumpToFile("5_i_cant_hear_anything", 0, 0)
-	debugDumpToFile("6_i_dont_know_where_i_am", 0, 0)
-	debugDumpToFile("7_its_cold", 0, 0)
-	debugDumpToFile("8_i_dont_know_what_happened", 0, 0)
-	debugDumpToFile("9_somebody_please_help", 0, 0)
+	System.savePersistentData(0, 0, "1_hello", "soak", true)
+	System.savePersistentData(0, 0, "2_can_anybody_hear_me", "soak", true)
+	System.savePersistentData(0, 0, "3_i_cant_feel_anything", "soak", true)
+	System.savePersistentData(0, 0, "4_i_cant_see_anything", "soak", true)
+	System.savePersistentData(0, 0, "5_i_cant_hear_anything", "soak", true)
+	System.savePersistentData(0, 0, "6_i_dont_know_where_i_am", "soak", true)
+	System.savePersistentData(0, 0, "7_its_cold", "soak", true)
+	System.savePersistentData(0, 0, "8_i_dont_know_what_happened", "soak", true)
+	System.savePersistentData(0, 0, "9_somebody_please_help", "soak", true)
 }
 
 function bool EarlyEnd.getGameClear()
