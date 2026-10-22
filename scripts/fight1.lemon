@@ -3,7 +3,7 @@
 //# address-hook(0x065662) end(0x065690)
 function void fn065662()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 || global.zone_act.apparent == 0x1700)
 		{
@@ -32,7 +32,7 @@ function void fn065662()
 //# address-hook(0x064c24) end(0x064c6a)
 function void fn064c24()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301)
 		{
@@ -48,7 +48,7 @@ function void fn064c24()
 //# address-hook(0x063f7a) end(0x063fd2)
 function void fn063f7a()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -64,7 +64,7 @@ function void fn063f7a()
 //# address-hook(0x063de0) end(0x063dfa)
 function void fn063de0()
 {	
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -130,7 +130,7 @@ function void fn063de0()
 //# address-hook(0x063e7c) end(0x063eba)
 function void fn063e7c()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -147,7 +147,7 @@ function void fn063f20()
 {
 	base.fn063f20()
 	
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -159,7 +159,7 @@ function void fn063f20()
 //# address-hook(0x064090) end(0x0640c8)
 function void fn064090()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -186,7 +186,7 @@ function void fn064090()
 //# address-hook(0x064310) end(0x06434e)
 function void fn064310()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -218,7 +218,7 @@ function void fn064310()
 //# address-hook(0x0643a4) end(0x0643b8)
 function void fn0643a4()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
@@ -236,7 +236,7 @@ function void fn0643a4()
 //# address-hook(0x06438a) end(0x0643a2)
 function void fn06438a()
 {
-	if (earlyend.state == EARLYEND_MGZCLEAR)
+	if (earlyend.state >= EARLYEND_MGZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
 	{
 		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
