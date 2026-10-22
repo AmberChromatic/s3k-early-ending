@@ -130,7 +130,7 @@ function void fn062354()
 
 						char.render_flags = (char.render_flags & ~(render_flag.FLIP_X | render_flag.FLIP_Y)) | (objA1.render_flags & (render_flag.FLIP_X | render_flag.FLIP_Y))
 						char.position.x.u16 = camera.position.x.u16 + getScreenCenterX()
-						char.position.y.u16 = u16[positionLookupAddress + 2]
+						char.position.y.u16 = 0x0330
 						char.velocity.x = 0
 						char.velocity.y = 0
 						char.groundspeed = 0

@@ -3,23 +3,26 @@
 //# address-hook(0x065662) end(0x065690)
 function void fn065662()
 {
-	if (global.zone_act.apparent == 0x0301 || global.zone_act.apparent == 0x1700)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		objA0.countdown_value = 0xff
-		
-		if (global.zone_act.apparent == 0x1700)
+		if (global.zone_act.apparent == 0x0301 || global.zone_act.apparent == 0x1700)
 		{
-			objA0.sprite_attributes &= ~sprite_attribute.PALETTE.LINE1
-		}
-		
-		A1 = 0xffffb000
-		objA0.position.x.u16 = objA1.position.x.u16 + 0x04
-		objA0.position.y.u16 = objA1.position.y.u16 - 0x10
-		
-		if (objA1.flags2e == 0 || level.trigger00 == 11)
-		{
-			UnloadObject()
-			return
+			objA0.countdown_value = 0xff
+			
+			if (global.zone_act.apparent == 0x1700)
+			{
+				objA0.sprite_attributes &= ~sprite_attribute.PALETTE.LINE1
+			}
+			
+			A1 = 0xffffb000
+			objA0.position.x.u16 = objA1.position.x.u16 + 0x04
+			objA0.position.y.u16 = objA1.position.y.u16 - 0x10
+			
+			if (objA1.flags2e == 0 || level.trigger00 == 11)
+			{
+				UnloadObject()
+				return
+			}
 		}
 	}
 	
@@ -29,72 +32,94 @@ function void fn065662()
 //# address-hook(0x064c24) end(0x064c6a)
 function void fn064c24()
 {
-	if (global.zone_act.apparent == 0x0301)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		// unload spindash dust as it shares vram space with the dizzy birds
-		UnloadObject()
-		return
+		if (global.zone_act.apparent == 0x0301)
+		{
+			// unload spindash dust as it shares vram space with the dizzy birds
+			UnloadObject()
+			return
+		}
 	}
 	
 	base.fn064c24()
 }
 
+//# address-hook(0x063f7a) end(0x063fd2)
+function void fn063f7a()
+{
+	if (earlyend.state == EARLYEND_MGZCLEAR)
+	{
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+		{
+			// ignore blocking player 1's attacks entirely
+			if (A1 != 0xffffb04a)
+				return
+		}
+	}
+	
+	base.fn063f7a()
+}
+
 //# address-hook(0x063de0) end(0x063dfa)
 function void fn063de0()
 {	
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		A1 = 0xffffb000
-		if (u8[A1 + 0x37] != 0) // protection flag check
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
-			if (u8[A1 + 0x34] != 0)
+			A1 = 0xffffb000
+			if (u8[A1 + 0x37] != 0) // protection flag check
 			{
-				if (objA1.state == char.state.STANDING)
+				if (u8[A1 + 0x34] != 0)
 				{
-					if (u8[A1 + 0x2e] == 0)
+					if (objA1.state == char.state.STANDING)
 					{
-						u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION)
-						objA1.state = char.state.RUNNING
-						objA1.animation.sprite = 0xbf
-						objA1.animation.timer = 60
-						u8[A1 + 0x34] = 124
+						if (u8[A1 + 0x2e] == 0)
+						{
+							u8[A1 + 0x2e] = (control_flag.DISABLE_ANIMATION)
+							objA1.state = char.state.RUNNING
+							objA1.animation.sprite = 0xbf
+							objA1.animation.timer = 60
+							u8[A1 + 0x34] = 124
+							
+							// spawn dizzy stars
+							Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
+							spawnSimpleChildObjects(0x06563a, 1)
+							
+						}
 						
-						// spawn dizzy stars
-						Kosinski.addToDMAQueue(0x174a86, 0xa000)	// Swirling stars around Knuckles' head while dizzy
-						spawnSimpleChildObjects(0x06563a, 1)
+						if (objA1.animation.timer > 0)
+							--objA1.animation.timer
 						
+						if (objA1.animation.timer > 16)
+							objA1.animation.sprite = 0xbf
+						else if (objA1.animation.timer > 8)
+							objA1.animation.sprite = 0xc1
+						else
+							objA1.animation.sprite = 0xc2
 					}
-					
-					if (objA1.animation.timer > 0)
-						--objA1.animation.timer
-					
-					if (objA1.animation.timer > 16)
-						objA1.animation.sprite = 0xbf
-					else if (objA1.animation.timer > 8)
-						objA1.animation.sprite = 0xc1
-					else
-						objA1.animation.sprite = 0xc2
+				
+					if (u8[A1 + 0x34] <= 123) // invuln flag check
+					{
+						u8[A1 + 0x34] = 124
+						System.setGlobalVariableValueByName("SonicGoesToSleepCounter", 0)
+					}
 				}
-			
-				if (u8[A1 + 0x34] <= 123) // invuln flag check
+				
+				A1 = 0xffffb04a
+				if (u8[A1 + 0x34] > 30)
 				{
-					u8[A1 + 0x34] = 124
-					System.setGlobalVariableValueByName("SonicGoesToSleepCounter", 0)
+					u8[A1 + 0x34] = 30
 				}
-			}
-			
-			A1 = 0xffffb04a
-			if (u8[A1 + 0x34] > 30)
-			{
-				u8[A1 + 0x34] = 30
-			}
-			
-			objA0.sprite_priority = 0
-			objA0.sprite_attributes |= sprite_attribute.PRIORITY
-			
-			if (objA0.base_state < 0x1c)
-			{
-				player2.control_override = 0
+				
+				objA0.sprite_priority = 0
+				objA0.sprite_attributes |= sprite_attribute.PRIORITY
+				
+				if (objA0.base_state < 0x1c)
+				{
+					player2.control_override = 0
+				}
 			}
 		}
 	}
@@ -105,10 +130,13 @@ function void fn063de0()
 //# address-hook(0x063e7c) end(0x063eba)
 function void fn063e7c()
 {
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		fn063f20()
-		return
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+		{
+			fn063f20()
+			return
+		}
 	}
 
 	base.fn063e7c()
@@ -119,31 +147,37 @@ function void fn063f20()
 {
 	base.fn063f20()
 	
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		objA0.countdown_value = 0x20
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+		{
+			objA0.countdown_value = 0x20
+		}
 	}
 }
 
 //# address-hook(0x064090) end(0x0640c8)
 function void fn064090()
 {
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		// Check against borders
-		fn06615a()
-
-		UpdateMovementStraightSimple()
-		if (objA0.velocity.x == 0)
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
-			// Stop gliding
-			fn064132()
+			// Check against borders
+			fn06615a()
+
+			UpdateMovementStraightSimple()
+			if (objA0.velocity.x == 0)
+			{
+				// Stop gliding
+				fn064132()
+				return
+			}
+
+			A3 = 0x0640cc
+			fn0660be()
 			return
 		}
-
-		A3 = 0x0640cc
-		fn0660be()
-		return
 	}
 	
 	base.fn064090()
@@ -152,27 +186,30 @@ function void fn064090()
 //# address-hook(0x064310) end(0x06434e)
 function void fn064310()
 {
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		objA0.base_state = 0x18
-		hud.dirty.timer = 0
-		u16[A0 + 0x44] = 2
-		objA0.mapping_offset = 0x066f36
-		objA0.animation.sprite = 2
-		objA0.flags38 |= 0x10
-		Audio.enableAudioModifier(0, 0, "_alt", 1.0)
-		objA0.value3b = 0
-		
-		D3.u16 = camera.position.x.u16 + getScreenCenterX()
-		D2.u16 = objA0.position.x.u16 - D3.u16
-		D0 = (D2.s16 < 0) ? 2 : 0
-		D2.u16 = abs(D2.s16)
-		objA0.velocity.x = abs(D2.s16 * 5)
-		
-		if (objA0.position.x.u16 > D3.u16)
-			objA0.velocity.x = -objA0.velocity.x
-		
-		return
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+		{
+			objA0.base_state = 0x18
+			hud.dirty.timer = 0
+			u16[A0 + 0x44] = 2
+			objA0.mapping_offset = 0x066f36
+			objA0.animation.sprite = 2
+			objA0.flags38 |= 0x10
+			Audio.enableAudioModifier(0, 0, "_alt", 1.0)
+			objA0.value3b = 0
+			
+			D3.u16 = camera.position.x.u16 + getScreenCenterX()
+			D2.u16 = objA0.position.x.u16 - D3.u16
+			D0 = (D2.s16 < 0) ? 2 : 0
+			D2.u16 = abs(D2.s16)
+			objA0.velocity.x = abs(D2.s16 * 5)
+			
+			if (objA0.position.x.u16 > D3.u16)
+				objA0.velocity.x = -objA0.velocity.x
+			
+			return
+		}
 	}
 	
 	base.fn064310()
@@ -181,13 +218,16 @@ function void fn064310()
 //# address-hook(0x0643a4) end(0x0643b8)
 function void fn0643a4()
 {
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		objA0.base_state = 0x1c
-		objA0.value3b = 0
-		objA0.collision_attributes = collision.size.8x8
-		boss.remaining_hits = 1
-		return
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+		{
+			objA0.base_state = 0x1c
+			objA0.value3b = 0
+			objA0.collision_attributes = collision.size.8x8
+			boss.remaining_hits = 1
+			return
+		}
 	}
 
 	base.fn0643a4()
@@ -196,113 +236,116 @@ function void fn0643a4()
 //# address-hook(0x06438a) end(0x0643a2)
 function void fn06438a()
 {
-	if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
+	if (earlyend.state == EARLYEND_MGZCLEAR)
 	{
-		if (objA0.value3b == 0)
+		if (global.zone_act.apparent == 0x0301 && global.level_flag02 == 3)
 		{
-			// waiting for player to hit him
-			fn06615a()
-			if (objA0.collision_attributes == 0)
+			if (objA0.value3b == 0)
 			{
-				playSound(0x5d)
-				playMusic(MUSIC_CTRL_FADEOUT)
+				// waiting for player to hit him
+				fn06615a()
+				if (objA0.collision_attributes == 0)
+				{
+					playSound(0x5d)
+					playMusic(MUSIC_CTRL_FADEOUT)
+					
+					A1 = 0xffffb04a
+					objA0.value3b = 1
+					objA0.velocity.x = ((objA1.position.x.u16 < objA0.position.x.u16) ? 0x200 : -0x200)
+					objA0.velocity.y = -0x300
+					
+					objA0.animation.sprite = 2		
+					player2.control_override = 0xff
+					control.player2 = 0
+					control.tails = 0
+				}
 				
-				A1 = 0xffffb04a
-				objA0.value3b = 1
-				objA0.velocity.x = ((objA1.position.x.u16 < objA0.position.x.u16) ? 0x200 : -0x200)
-				objA0.velocity.y = -0x300
-				
-				objA0.animation.sprite = 2		
-				player2.control_override = 0xff
-				control.player2 = 0
-				control.tails = 0
+				AddAsDynamicObject()
 			}
-			
-			AddAsDynamicObject()
-		}
-		else if (objA0.value3b == 1)
-		{
-			// falling into the water
-			MoveWithGravity20()
-			fn06615a()
-			if (objA0.position.y.u16 > water.height.current)
+			else if (objA0.value3b == 1)
 			{
-				objA0.value3b = 2
-				objA0.animation.sprite = 3
-				
-				playSound(SFX_WATERSPLASH)
+				// falling into the water
+				MoveWithGravity20()
+				fn06615a()
+				if (objA0.position.y.u16 > water.height.current)
+				{
+					objA0.value3b = 2
+					objA0.animation.sprite = 3
+					
+					playSound(SFX_WATERSPLASH)
 
-				A6 = 0xffffcc54
-				u16[A6 + 0x20] = 0x0100
-				u16[A6 + 0x0a] |= sprite_attribute.PRIORITY
-				u8[A6 + 0x21] = 1
-				u8[A6 + 0x2a] = 0
-				u32[A6 + 0x10] = objA0.position.x
-				
-				objA0.position.y.u16 = water.height.current
-				objA0.velocity.y = 0
-				
-				s16[A0 + 0x40] = 0x02
-				objA0.value3e = 0x30
+					A6 = 0xffffcc54
+					u16[A6 + 0x20] = 0x0100
+					u16[A6 + 0x0a] |= sprite_attribute.PRIORITY
+					u8[A6 + 0x21] = 1
+					u8[A6 + 0x2a] = 0
+					u32[A6 + 0x10] = objA0.position.x
+					
+					objA0.position.y.u16 = water.height.current
+					objA0.velocity.y = 0
+					
+					s16[A0 + 0x40] = 0x02
+					objA0.value3e = 0x30
+				}
 			}
+			else if (objA0.value3b == 2)
+			{
+				A1 = 0xffffb04a
+				if (objA1.state == char.state.STANDING)
+				{
+					if (objA1.animation.frame > 0x10)
+						objA1.animation.frame = 0
+					if (objA1.animation.sprite == 0xad)
+						objA1.animation.sprite = 0xae
+				}
+				
+				UpdateMovementStraightSimple()
+				if (objA0.velocity.x > 0)
+					objA0.velocity.x = max(objA0.velocity.x - 0x18, 0)
+				else if (objA0.velocity.x < 0)
+					objA0.velocity.x = min(objA0.velocity.x + 0x18, 0)
+				
+				fn0847e6()
+				if (abs(objA0.velocity.x) < 0x40)
+					objA0.velocity.x = -objA0.velocity.y
+				
+				objA0.position.y += 0x00000800
+				
+				if (objA0.position.y.u16 > camera.position.y.u16 + getScreenHeight() + 0x10)
+				{
+					objA0.value3b = 3
+					objA0.countdown_value = 0x100
+					objA0.position.y.u16 += 0x40 // offset him just briefly
+					playSound(SFX_DROWN)
+					EarlyEnding.SpawnDrowningBubbles()
+				}
+			}
+			else if (objA0.value3b == 3)
+			{
+				--objA0.countdown_value
+				if (objA0.countdown_value == 0x40)
+				{
+					EarlyEnd.UpdateRouteProgression(EARLYEND_CNZCLEAR)
+				}
+				
+				if (objA0.countdown_value < 0)
+				{
+					objA0.update_address = 0x0622b2
+					objA0.base_state = 0x0a
+					global.level_flag02 = 0
+					earlyend.swapcontrols = false
+					
+					player1.control_override = 0
+					player2.control_override = 0
+					hud.dirty.timer = 1
+					
+					A1 = 0xffffb000
+					u8[A1 + 0x2e] = 0
+					u8[A1 + 0x37] = 0
+				}
+			}
+			return
 		}
-		else if (objA0.value3b == 2)
-		{
-			A1 = 0xffffb04a
-			if (objA1.state == char.state.STANDING)
-			{
-				if (objA1.animation.frame > 0x10)
-					objA1.animation.frame = 0
-				if (objA1.animation.sprite == 0xad)
-					objA1.animation.sprite = 0xae
-			}
-			
-			UpdateMovementStraightSimple()
-			if (objA0.velocity.x > 0)
-				objA0.velocity.x = max(objA0.velocity.x - 0x18, 0)
-			else if (objA0.velocity.x < 0)
-				objA0.velocity.x = min(objA0.velocity.x + 0x18, 0)
-			
-			fn0847e6()
-			if (abs(objA0.velocity.x) < 0x40)
-				objA0.velocity.x = -objA0.velocity.y
-			
-			objA0.position.y += 0x00000800
-			
-			if (objA0.position.y.u16 > camera.position.y.u16 + getScreenHeight() + 0x10)
-			{
-				objA0.value3b = 3
-				objA0.countdown_value = 0x100
-				objA0.position.y.u16 += 0x40 // offset him just briefly
-				playSound(SFX_DROWN)
-				EarlyEnding.SpawnDrowningBubbles()
-			}
-		}
-		else if (objA0.value3b == 3)
-		{
-			--objA0.countdown_value
-			if (objA0.countdown_value == 0x40)
-			{
-				EarlyEnd.UpdateRouteProgression(EARLYEND_CNZCLEAR)
-			}
-			
-			if (objA0.countdown_value < 0)
-			{
-				objA0.update_address = 0x0622b2
-				objA0.base_state = 0x0a
-				global.level_flag02 = 0
-				earlyend.swapcontrols = false
-				
-				player1.control_override = 0
-				player2.control_override = 0
-				hud.dirty.timer = 1
-				
-				A1 = 0xffffb000
-				u8[A1 + 0x2e] = 0
-				u8[A1 + 0x37] = 0
-			}
-		}
-		return
 	}
 	
 	base.fn06438a()
