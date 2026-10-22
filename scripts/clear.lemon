@@ -355,5 +355,5 @@ function bool GamePause.BeginPause()
 	if (EarlyEnd.getGameClear())
 		return false
 		
-	return true
+	return base.GamePause.BeginPause()
 }
