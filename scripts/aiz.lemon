@@ -90,7 +90,7 @@ function void fn0620e4()
 				
 				player1.camera_lock = 0xff
 				
-				objA0.render_flags ^= render_flag.FLIP_X
+				objA0.render_flags |= render_flag.FLIP_X
 				objA0.animation.sprite = 32
 			}
 		}
@@ -139,6 +139,7 @@ function void fn0620e4()
 		else if (objA0.value3b == 2)
 		{
 			// walks away
+			objA0.render_flags &= ~render_flag.FLIP_X
 			objA0.position.x.u16 += 2
 			Object.animationProgress(0x06669f)		// Cutscene Knuckles walking animation
 			
