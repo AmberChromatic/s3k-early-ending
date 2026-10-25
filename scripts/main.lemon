@@ -12,7 +12,7 @@ include dez_cutscene
 include outro
 include clear
 include fight1
-include secret1/?
+include secret/?
 
 global u8 earlyend.state
 

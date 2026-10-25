@@ -23,93 +23,82 @@ function void fn062640()
 	}
 }
 
-//# address-hook(0x267c32)
-function void EarlyEnding.Bomb()
+//# address-hook(0x0637ec) end(0x063840)
+function void fn0637ec()
 {
-	if (objA0.base_state == 0x00)
-	{		
-		setupObjectAttributesFull(0x066486)
-		objA0.hitbox_extends.y = 0x10
-		Kosinski.addToDMAQueue(0x165000, 0xa5c0)		// Bomb sprites
-		objA0.countdown_value = 0x30
-		objA0.position.y.u16 = 0x052f
-		objA0.base_state = 0x02
-		
-		// "spawnChildObjects(0x06665c)" replaced by:
-		spawnChildObject(0x0638dc, 0x00, 0, -20)
-	}
-	else if (objA0.base_state == 0x02)
+	if (earlyend.state == EARLYEND_CNZCLEAR)
 	{
-		if (move_area.left < 0x3a10)
-		{
-			move_area.left += 4
+		if (objA0.base_state == 0x00)
+		{		
+			setupObjectAttributesFull(0x066486)
+			objA0.hitbox_extends.y = 0x10
+			Kosinski.addToDMAQueue(0x165000, 0xa5c0)		// Bomb sprites
+			objA0.countdown_value = 0x30
+			objA0.position.y.u16 = 0x052f
+			objA0.base_state = 0x02
+			
+			// "spawnChildObjects(0x06665c)" replaced by:
+			spawnChildObject(0x0638dc, 0x00, 0, -20)
 		}
-		
-		if (move_area.left > 0x3a10)
+		else if (objA0.base_state == 0x02)
 		{
-			move_area.left = 0x3a10
-		}
-	
-		if (camera.position.y.u16 < 0x0540)
-			loadPaletteLine1(0x066a32) // load bomb palette
-		else
-			loadPaletteLine1(0x0a929c) // reload zone palette
-	
-		if (objA0.value3a == 0)
-		{
-			A1 = 0xffffb000
-			if (objA1.position.y.u16 <= 0x0588)
+			if (move_area.left < 0x3a10)
 			{
-				objA0.value3a = 1 // start countdown
+				move_area.left += 4
 			}
-		}
-		else
-		{
-			--objA0.countdown_value
-			if (objA0.countdown_value < 0)
+			
+			if (move_area.left > 0x3a10)
 			{
-				if (allocDynamicObjectStd())
-				{
-					// Create the object that fades out level music and starts the Knuckles theme afterwards
-					objA1.update_address = 0x085b30
-					u8[A1 + 0x2c] = MUSIC_KNUCKLES
-				}
-				
-				playSound(0x4e)
-				addPatternLoadingCue(0x083d64)		// Boss explosion sprites
-				camera.screenshake.state.hi = 0xff
-				objA0.base_state = 0x04
-				objA0.flags2a |= 0x80 // unload spark spawner
-				objA0.render_flags = 0
-				loadPaletteLine1(0x0a929c)
-				
-				if (allocDynamicObjectStd())
-				{
-					// Spawn object to manage fading to white, and if to fade back after
-					u16[A0 + 0x44] = A1.u16
-					objA1.update_address = 0x085e64
-					u16[A1 + 0x3a] = 7
-					u8[A1 + 0x2c] = 0xff
-
-					// "spawnSimpleChildObjects(0x066650)" replaced by:
-					spawnSimpleChildObjects(0x06395c, 10)
-				}
-				
+				move_area.left = 0x3a10
+			}
+		
+			if (camera.position.y.u16 < 0x0540)
+				loadPaletteLine1(0x066a32) // load bomb palette
+			else
+				loadPaletteLine1(0x0a929c) // reload zone palette
+		
+			if (objA0.value3a == 0)
+			{
 				A1 = 0xffffb000
-				playSound(0x35)
-				objA1.base_state = 0x04
-				objA1.flags2a |= char.flag.IN_AIR
-				objA1.flags2a &= ~(char.flag.ON_OBJECT | char.flag.PUSHING)
-				objA1.velocity.y = -0x300
-				objA1.velocity.x = -0x300
-				u8[A1 + 0x2a] &= ~char.flag.FACING_LEFT
-				u16[A1 + 0x1c] = 0
-				objA1.state = char.state.GOT_HURT
-				u8[A1 + 0x2f] = 0 // reset double jump state
-				
-				A1 = 0xffffb04a
-				if (tails.ai_routine != 0x02 && tails.ai_routine != 0x04 && objA1.base_state <= 0x02)
+				if (objA1.position.y.u16 <= 0x0588)
 				{
+					objA0.value3a = 1 // start countdown
+				}
+			}
+			else
+			{
+				--objA0.countdown_value
+				if (objA0.countdown_value < 0)
+				{
+					if (allocDynamicObjectStd())
+					{
+						// Create the object that fades out level music and starts the Knuckles theme afterwards
+						objA1.update_address = 0x085b30
+						u8[A1 + 0x2c] = MUSIC_KNUCKLES
+					}
+					
+					playSound(0x4e)
+					addPatternLoadingCue(0x083d64)		// Boss explosion sprites
+					camera.screenshake.state.hi = 0xff
+					objA0.base_state = 0x04
+					objA0.flags2a |= 0x80 // unload spark spawner
+					objA0.render_flags = 0
+					loadPaletteLine1(0x0a929c)
+					
+					if (allocDynamicObjectStd())
+					{
+						// Spawn object to manage fading to white, and if to fade back after
+						u16[A0 + 0x44] = A1.u16
+						objA1.update_address = 0x085e64
+						u16[A1 + 0x3a] = 7
+						u8[A1 + 0x2c] = 0xff
+
+						// "spawnSimpleChildObjects(0x066650)" replaced by:
+						spawnSimpleChildObjects(0x06395c, 10)
+					}
+					
+					A1 = 0xffffb000
+					playSound(0x35)
 					objA1.base_state = 0x04
 					objA1.flags2a |= char.flag.IN_AIR
 					objA1.flags2a &= ~(char.flag.ON_OBJECT | char.flag.PUSHING)
@@ -119,54 +108,71 @@ function void EarlyEnding.Bomb()
 					u16[A1 + 0x1c] = 0
 					objA1.state = char.state.GOT_HURT
 					u8[A1 + 0x2f] = 0 // reset double jump state
+					
+					A1 = 0xffffb04a
+					if (tails.ai_routine != 0x02 && tails.ai_routine != 0x04 && objA1.base_state <= 0x02)
+					{
+						objA1.base_state = 0x04
+						objA1.flags2a |= char.flag.IN_AIR
+						objA1.flags2a &= ~(char.flag.ON_OBJECT | char.flag.PUSHING)
+						objA1.velocity.y = -0x300
+						objA1.velocity.x = -0x300
+						u8[A1 + 0x2a] &= ~char.flag.FACING_LEFT
+						u16[A1 + 0x1c] = 0
+						objA1.state = char.state.GOT_HURT
+						u8[A1 + 0x2f] = 0 // reset double jump state
+					}
 				}
 			}
+			DrawObject()
 		}
-		DrawObject()
-	}
-	else if (objA0.base_state == 0x04)
-	{
-		if ((level.framecounter % 3) == 0)
+		else if (objA0.base_state == 0x04)
 		{
-			// explosion spawner
-			if (allocDynamicObjectStd())
+			if ((level.framecounter % 3) == 0)
 			{
-				objA1.update_address = 0x083f4a
-				objA1.position.x.u16 = camera.position.x.u16 + System.randRange(0, getScreenWidth())
-				objA1.position.y.u16 = camera.position.y.u16 + System.randRange(0, getScreenHeight())
-				
-				if (objA1.position.x.u16 < 0x3a11)
+				// explosion spawner
+				if (allocDynamicObjectStd())
 				{
-					objA1.position.x.u16 = 0x3a11 + System.randRange(0, 0x20)
+					objA1.update_address = 0x083f4a
+					objA1.position.x.u16 = camera.position.x.u16 + System.randRange(0, getScreenWidth())
+					objA1.position.y.u16 = camera.position.y.u16 + System.randRange(0, getScreenHeight())
+					
+					if (objA1.position.x.u16 < 0x3a11)
+					{
+						objA1.position.x.u16 = 0x3a11 + System.randRange(0, 0x20)
+					}
+					
+					if (objA1.position.x.u16 > 0x3bf3)
+					{
+						objA1.position.x.u16 = 0x3bf3 - System.randRange(0, 0x20)
+					}
 				}
-				
-				if (objA1.position.x.u16 > 0x3bf3)
+			}
+		
+			A1 = 0xffffb000
+			if (camera.position.x.u16 + (getScreenWidth() - 320) >= 0x3b40 && objA1.position.y.u16 >= 0x01c0)
+			{
+				if ((u8[A1 + 0x2a] & char.flag.IN_AIR) == 0)
 				{
-					objA1.position.x.u16 = 0x3bf3 - System.randRange(0, 0x20)
+					playSound(0x4e)
+					addPatternLoadingCue(0x083d64)		// Boss explosion sprites
+					spawnSimpleChildObjects(0x06285a, 4 + getScreenExtend() / 0x20)		// More explosion spawners in widescreen
+					camera.screenshake.state.hi = 0xff
+					UnloadObject()
+					return
 				}
 			}
 		}
+		return
+	}
 	
-		A1 = 0xffffb000
-		if (camera.position.x.u16 + (getScreenWidth() - 320) >= 0x3b40 && objA1.position.y.u16 >= 0x01c0)
-		{
-			if ((u8[A1 + 0x2a] & char.flag.IN_AIR) == 0)
-			{
-				playSound(0x4e)
-				addPatternLoadingCue(0x083d64)		// Boss explosion sprites
-				spawnSimpleChildObjects(0x06285a, 4 + getScreenExtend() / 0x20)		// More explosion spawners in widescreen
-				camera.screenshake.state.hi = 0xff
-				UnloadObject()
-				return
-			}
-		}
-	}
+	base.fn0637ec()
 }
 
 //# address-hook(0x08cb9e) end(0x08cbec)
 function void fn08cb9e()
 {
-	if (earlyend.state == EARLYEND_CNZCLEAR)
+	if (earlyend.state == EARLYEND_CNZCLEAR && global.zone_act.apparent == 0x0600)
 	{
 		// The Egg Mobile is initialized here as the main object, other parts are spawned after this
 		setupObjectAttributesFull(0x08d230)
@@ -185,7 +191,7 @@ function void fn08cb9e()
 		spawnChildObject(0x067c38, 0x00, 0, -28)		// Robotnik head
 		
 		// spawn bomb object here
-		spawnChildObject(0x267c32, 0, 0, 0)
+		spawnChildObject(0x0637ec, 0, 0, 0)
 		
 		objA0.base_state = 0x06
 		objA0.render_flags |= render_flag.FLIP_X
