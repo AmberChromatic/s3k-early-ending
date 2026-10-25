@@ -52,7 +52,7 @@ function void fn0637ec()
 				move_area.left = 0x3a10
 			}
 		
-			if (camera.position.y.u16 < 0x0540)
+			if (camera.position.y.u16 < 0x0548)
 				loadPaletteLine1(0x066a32) // load bomb palette
 			else
 				loadPaletteLine1(0x0a929c) // reload zone palette
