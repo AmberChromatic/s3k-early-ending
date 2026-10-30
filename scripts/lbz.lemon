@@ -158,6 +158,7 @@ function void fn0637ec()
 					addPatternLoadingCue(0x083d64)		// Boss explosion sprites
 					spawnSimpleChildObjects(0x06285a, 4 + getScreenExtend() / 0x20)		// More explosion spawners in widescreen
 					camera.screenshake.state.hi = 0xff
+					requestLoadingPatterns(0x7b)		// Robotnik's ship and boss explosion sprites
 					UnloadObject()
 					return
 				}
