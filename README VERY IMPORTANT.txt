@@ -1,5 +1,5 @@
 ==FOREWORD==
-Hey all, it's Amy. I deeply apologize for the wait with the release of this mod.
+Hey all, it's Amber. I deeply apologize for the wait with the release of this mod.
 The past year has been one of our worst in our entire life and only now are we
 starting to slowly get out of it. It's been a long journey, and we're still on
 a path to recovering from a lot of our issues, but we're doing what we can.
@@ -29,7 +29,7 @@ EE is compatible with the following mods:
 
 ==CREDITS==
 AmberChromatic - Concept, scripting
-StarrydutNova - Concept, playtesting, livestreaming, moral support
+StarrydustNova - Concept, playtesting, livestreaming, moral support
 BriceTAS - Concept, playtesting, livestreaming, moral support
 panoramhusky - Playtesting
 astral.amethyst - Playtesting
