@@ -16,8 +16,7 @@ on this project a lot more fun, and it was exciting being able to set things
 up the way we did with their livestreams. We've known them for nearly a decade
 and they've been here through pretty much all of it.
 
-NO GENERATIVE AI WAS USED IN THE MAKING OF THIS MOD, NOR WILL IT BE IN ANY OF OUR MODS.
-
+NO GENERATIVE AI WAS USED IN THE MAKING OF THIS MOD, NOR WILL IT EVER BE USED IN ANY OF OUR MODS.
 
 ==MOD COMPATIBILITY==
 Do keep in mind that this mod does have compatibility with a few other mods.
