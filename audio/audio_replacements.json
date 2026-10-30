@@ -5,7 +5,7 @@
 	"snd_k": { "File": "progress.ogg", "Type": "Sound", "Channel": "68", "Name": "progress.ogg", "Volume": "0.9"},
 	"snd_e": { "File": "e.ogg", "Type": "Sound", "Channel": "BD", "Volume": "0.9"},
 	
-	// SECRET 1
+	// SECRET
 	"mus_rx": { "File": "secret/rx.ogg", "Type": "Music", "LoopStart": "769793", "Name": "What thou Thinketh I shall Nameth mine Awesome Mixetape??", "Volume": "0.9"},
 	"txt_rouxls1": { "File": "secret/voice/rouxls1.ogg", "Type": "Sound", "Channel": "A0", "Volume": "0.8"},
 	"txt_rouxls2": { "File": "secret/voice/rouxls2.ogg", "Type": "Sound", "Channel": "A0", "Volume": "0.8"},
