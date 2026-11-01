@@ -20,6 +20,10 @@ and they've been here through pretty much all of it.
 
 NO GENERATIVE AI WAS USED IN THE MAKING OF THIS MOD, NOR WILL IT EVER BE USED IN ANY OF OUR MODS.
 
+==1.0.1 CHANGELOG==
+-Knuckles has been removed from the continue screen after you clear's CNZ progression requirement.
+-Boss floor position in DEZ has been fixed for the stable build.
+
 ==MOD COMPATIBILITY==
 Do keep in mind that this mod does have compatibility with a few other mods.
 However, it is not compatible with any save file mods, so please beware and
