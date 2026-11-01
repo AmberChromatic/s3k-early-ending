@@ -83,6 +83,19 @@ function void CheckDistanceToPlayers()
 	base.CheckDistanceToPlayers()
 }
 
+// knuckles on continue screen
+//# address-hook(0x05c8c8) end(0x05c8dc)
+function void fn05c8c8()
+{
+	if (earlyend.state >= EARLYEND_CNZCLEAR && earlyend.state != EARLYEND_MINEAWESOMETHCONSTANT)
+	{
+		UnloadObject()
+		return
+	}
+	
+	base.fn05c8c8()
+}
+
 /*
 function void waitForNextFrame()
 {
