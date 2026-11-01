@@ -1,5 +1,5 @@
 ==README==
-THIS MOD REQUIRES S3AIR VERSION v26.08.15.0 OR HIGHER
+THIS MOD REQUIRES S3AIR VERSION v26.03.28.0 OR HIGHER
 
 Hey all, it's Amber. I deeply apologize for the wait with the release of this mod.
 The past year has been one of our worst in our entire life and only now are we
