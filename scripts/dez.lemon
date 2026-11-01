@@ -24,7 +24,7 @@ function void fn05a7c8()
 	
 	if (earlyend.state >= EARLYEND_CNZCLEAR)
 	{
-		objA0.position.x.u16 = 0x04bb + getScreenExtend() * 2
+		objA0.position.x.u16 = 0x04bb + getScreenExtend() * 3
 	}
 }
 
